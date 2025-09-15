@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/task_orchestrator.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py task_orchestrator.py"
           }
         ]
       }
@@ -15,11 +15,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_controller.py session-start"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_controller.py session-start"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_context.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_context.py"
           }
         ]
       }
@@ -30,15 +30,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/security_guard.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py security_guard.py"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/git_backup.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py git_backup.py"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/analytics_tracker.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py analytics_tracker.py"
           }
         ]
       }
@@ -49,15 +49,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_controller.py post-tool"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_controller.py post-tool"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/perf_optimizer.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py perf_optimizer.py"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/doc_enforcer.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py doc_enforcer.py"
           }
         ]
       }

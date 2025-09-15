@@ -5,11 +5,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_controller.py session-start"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_controller.py session-start"
           },
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_context.py"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_context.py"
           }
         ]
       }
@@ -20,7 +20,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/claudook/smart_controller.py post-tool"
+            "command": "python3 .claude/hooks/claudook/hook_runner.py smart_controller.py post-tool"
           }
         ]
       }
