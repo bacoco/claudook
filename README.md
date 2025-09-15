@@ -185,6 +185,26 @@ If hooks are blocking your work (like the perf_optimizer or doc_enforcer):
 
 This works by renaming `settings.json` → `settings.json.disabled`, completely disabling all hooks including security guards, performance optimizers, and test enforcers.
 
+### 🧹 Uninstall Options
+
+```bash
+# Uninstall from current project only
+./.claude/hooks/claudook/uninstall.sh
+
+# Find and remove ALL Claudook installations in current directory tree
+./.claude/hooks/claudook/uninstall_all.sh
+
+# Find and remove ALL Claudook installations from specific path
+./.claude/hooks/claudook/uninstall_all.sh /path/to/search
+```
+
+The uninstaller removes:
+- All hook files
+- Settings configurations
+- Task orchestration data
+- Analytics and backups
+- Empty .claude directories
+
 ## 🔥 Real-World Examples
 
 ### Example 1: Building a Feature
