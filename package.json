@@ -1,0 +1,68 @@
+{
+  "name": "claudook",
+  "version": "2.0.0",
+  "description": "Transform Claude into Your AI Development Powerhouse - Pure JavaScript Edition",
+  "main": ".claude/hooks/claudook/runner.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint .claude/hooks/claudook/*.js --fix",
+    "format": "prettier --write .claude/hooks/claudook/*.js",
+    "validate": "npm run format && npm run lint && npm test"
+  },
+  "keywords": [
+    "claude",
+    "ai",
+    "automation",
+    "hooks",
+    "development"
+  ],
+  "author": "Claudook Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      ".claude/hooks/claudook/*.js",
+      "!.claude/hooks/claudook/*.test.js"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:node/recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2021
+    },
+    "rules": {
+      "node/no-unpublished-require": "off",
+      "node/no-missing-require": "off",
+      "no-process-exit": "off"
+    }
+  },
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "printWidth": 100
+  }
+}

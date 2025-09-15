@@ -15,37 +15,37 @@ const path = require('path');
 const fs = require('fs');
 
 function findClaudeRoot(dir = process.cwd()) {
-    while (dir !== '/') {
-        if (fs.existsSync(path.join(dir, '.claude'))) {
-            return dir;
-        }
-        dir = path.dirname(dir);
+  while (dir !== '/') {
+    if (fs.existsSync(path.join(dir, '.claude'))) {
+      return dir;
     }
-    return null;
+    dir = path.dirname(dir);
+  }
+  return null;
 }
 
 const root = findClaudeRoot();
 if (!root) {
-    // Silent fail - no .claude directory
-    process.exit(0);
+  // Silent fail - no .claude directory
+  process.exit(0);
 }
 
 const script = process.argv[2];
 if (!script) {
-    process.exit(0);
+  process.exit(0);
 }
 
 const scriptPath = path.join(root, '.claude', 'hooks', 'claudook', script);
 if (!fs.existsSync(scriptPath)) {
-    // Silent fail - script doesn't exist
-    process.exit(0);
+  // Silent fail - script doesn't exist
+  process.exit(0);
 }
 
 // Run Python script from project root
 const proc = spawn('python3', [scriptPath, ...process.argv.slice(3)], {
-    cwd: root,
-    stdio: 'inherit',
-    env: { ...process.env, CLAUDOOK_ROOT: root }
+  cwd: root,
+  stdio: 'inherit',
+  env: { ...process.env, CLAUDOOK_ROOT: root },
 });
 
 proc.on('error', () => process.exit(0));
