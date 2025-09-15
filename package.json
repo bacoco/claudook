@@ -1,6 +1,6 @@
 {
   "name": "create-claudook",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "Transform Claude into Your AI Development Powerhouse - Pure JavaScript Edition",
   "main": "bin/create-claudook.js",
   "type": "module",
