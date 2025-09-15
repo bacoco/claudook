@@ -158,6 +158,9 @@ Suggested safer alternative:
 #### Option 1: NPX (Recommended)
 ```bash
 npx create-claudook
+
+# If your project uses npm dependencies, also run:
+npm install
 ```
 
 #### Option 2: Tell Claude
@@ -169,6 +172,9 @@ Install Claudook using npx create-claudook
 ```bash
 npm install -g create-claudook
 create-claudook
+
+# If your project uses npm dependencies, also run:
+npm install
 ```
 
 **That's it!** No configuration needed. Works immediately.

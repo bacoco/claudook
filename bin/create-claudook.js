@@ -252,6 +252,18 @@ async function main() {
     console.log('  • Settings are project-specific');
     console.log('  • Works immediately (no restart needed)\n');
 
+    // Check if package.json exists and has dependencies
+    const packageJsonPath = join(installDir, 'package.json');
+    if (await fs.pathExists(packageJsonPath)) {
+      const packageJson = await fs.readJson(packageJsonPath);
+      if ((packageJson.dependencies && Object.keys(packageJson.dependencies).length > 0) ||
+          (packageJson.devDependencies && Object.keys(packageJson.devDependencies).length > 0)) {
+        console.log(chalk.yellow.bold('⚠️  Important: Run npm install\n'));
+        console.log(chalk.yellow('Your project has npm dependencies. Please run:'));
+        console.log(chalk.cyan('  npm install\n'));
+      }
+    }
+
     console.log(chalk.purple('🚀 Try it out:'));
     console.log('  Ask Claude to create a feature and watch the automation!\n');
 
