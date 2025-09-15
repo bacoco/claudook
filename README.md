@@ -61,7 +61,7 @@ I'll break this down into parallel tasks:
 
 ## 🔥 Current Status
 
-**Version 2.7.5 - Stable Release! All hooks verified working in production!**
+**Version 2.7.6 - Stable Release! All hooks verified working in production!**
 
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions
@@ -497,7 +497,7 @@ No system files touched. Complete removal.
 
 ## 🔧 Recent Improvements
 
-### Latest Updates (2025-01-15) - Version 2.7.5
+### Latest Updates (2025-01-15) - Version 2.7.6
 - **Production Ready**: All hooks verified working in real installations
 - **Task Files Fixed**: Task orchestrator now creates markdown files properly
 - **Analytics Working**: Tool usage tracking fully operational
@@ -563,7 +563,7 @@ Then ask Claude to build something complex and watch the magic happen.
 ## 📦 npm Package
 
 - **Package**: [create-claudook](https://www.npmjs.com/package/create-claudook)
-- **Version**: 2.7.5
+- **Version**: 2.7.6
 - **License**: MIT
 
 ---
