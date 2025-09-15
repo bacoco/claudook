@@ -11,6 +11,10 @@ import hashlib
 from datetime import datetime
 from pathlib import Path
 
+# Import the agent spawner
+sys.path.insert(0, str(Path(__file__).parent))
+from agent_spawner import AgentSpawner
+
 # Control file for feature toggle
 TASK_DECOMPOSE_ENABLED = os.path.expanduser("~/.claude/parallel_enabled")
 TASKS_DIR = Path(".claude/tasks")
@@ -58,6 +62,7 @@ class TaskOrchestrator:
         self.tasks = []
         self.dependencies = {}
         self.parallel_groups = []
+        self.agent_spawner = None
 
     def analyze_complexity(self, prompt):
         """Analyze the complexity of the user's request."""
@@ -314,12 +319,106 @@ class TaskOrchestrator:
 
         return groups
 
+    def create_individual_task_files(self, tasks, session_dir):
+        """Create individual task files for each decomposed task."""
+        tasks_dir = session_dir / "tasks"
+
+        for task in tasks:
+            task_file = tasks_dir / f"task_{task['id']}.md"
+
+            content = f"""# Task {task['id']}: {task['name']}
+
+## Description
+{task['description']}
+
+## Details
+- **Agent Type**: {task['agent_type']}
+- **Estimated Time**: {task['estimated_time']}
+- **Parallel Safe**: {'Yes' if task.get('parallel_safe', True) else 'No'}
+
+## Dependencies
+{', '.join(task['dependencies']) if task['dependencies'] else 'None'}
+
+## Status
+- **Current State**: Pending
+- **Started**: Not yet
+- **Completed**: Not yet
+
+## Execution Plan
+1. Initialize {task['agent_type']} agent
+2. Load task context
+3. Execute task
+4. Validate results
+5. Report completion
+
+## Output
+*To be generated during execution*
+
+## Logs
+*Execution logs will appear here*
+"""
+
+            with open(task_file, "w") as f:
+                f.write(content)
+
+    def create_agent_configs(self, tasks, session_dir):
+        """Create agent configurations for all tasks."""
+        # Initialize agent spawner
+        self.agent_spawner = AgentSpawner(self.session_id)
+
+        # Update agent directories to use session folder
+        agents_dir = session_dir / "agents"
+        outputs_dir = session_dir / "outputs"
+
+        # Spawn agents for all tasks
+        for task in tasks:
+            agent = self.agent_spawner.spawn_agent(task)
+
+            # Save agent configuration to session folder
+            agent_config_file = agents_dir / f"agent_{agent.id}_{agent.type}.json"
+            config_data = {
+                "id": agent.id,
+                "type": agent.type,
+                "task": task,
+                "session_id": self.session_id,
+                "created_at": agent.created_at.isoformat(),
+                "status": agent.status,
+                "role": agent.config["role"],
+                "tools": agent.config["tools"],
+                "prompt": agent.generate_prompt()
+            }
+
+            with open(agent_config_file, "w") as f:
+                json.dump(config_data, f, indent=2)
+
+        # Generate agent summary
+        agent_summary_file = agents_dir / "AGENT_SUMMARY.md"
+        summary_content = f"""# Agent Configuration Summary
+## Session: {self.session_id}
+
+### Total Agents: {len(tasks)}
+
+| Agent ID | Type | Task | Status |
+|----------|------|------|--------|
+"""
+        for agent_id, agent in self.agent_spawner.agents.items():
+            summary_content += f"| {agent.id} | {agent.type} | {agent.task.get('name', 'unknown')} | {agent.status} |\n"
+
+        with open(agent_summary_file, "w") as f:
+            f.write(summary_content)
+
     def create_master_tasks_file(self, prompt, tasks, parallel_groups):
         """Create the MASTER_TASKS.md file."""
-        tasks_dir = TASKS_DIR / f"session_{self.session_id}"
-        tasks_dir.mkdir(parents=True, exist_ok=True)
+        session_dir = TASKS_DIR / f"session_{self.session_id}"
+        session_dir.mkdir(parents=True, exist_ok=True)
 
-        master_file = TASKS_DIR / "MASTER_TASKS.md"
+        # Create subdirectories
+        (session_dir / "tasks").mkdir(exist_ok=True)
+        (session_dir / "agents").mkdir(exist_ok=True)
+        (session_dir / "outputs").mkdir(exist_ok=True)
+
+        # Write to session folder instead of main directory
+        master_file = session_dir / "MASTER_TASKS.md"
 
         content = f"""# 📋 Master Task List
 ## Session: {self.session_id}
@@ -374,11 +473,18 @@ class TaskOrchestrator:
         with open(master_file, "w") as f:
             f.write(content)
 
+        # Create individual task files
+        self.create_individual_task_files(tasks, session_dir)
+
+        # Create agent configurations
+        self.create_agent_configs(tasks, session_dir)
+
         return master_file
 
     def create_execution_dashboard(self, tasks, parallel_groups):
         """Create live execution dashboard."""
-        dashboard_file = TASKS_DIR / "EXECUTION_DASHBOARD.md"
+        session_dir = TASKS_DIR / f"session_{self.session_id}"
+        dashboard_file = session_dir / "EXECUTION_DASHBOARD.md"
 
         content = f"""# 🎯 Parallel Execution Dashboard
 ## Session: {self.session_id}
@@ -461,9 +567,12 @@ I've analyzed your request and created an intelligent execution plan with {len(t
         context += f"""
 
 📁 Task Files Created:
-• Master Plan: {master_file}
-• Execution Dashboard: .claude/tasks/EXECUTION_DASHBOARD.md
 • Session Folder: .claude/tasks/session_{self.session_id}/
+  ├── MASTER_TASKS.md - Overall task plan
+  ├── EXECUTION_DASHBOARD.md - Live status tracking
+  ├── tasks/ - {len(tasks)} individual task files
+  ├── agents/ - Agent configurations (to be populated)
+  └── outputs/ - Task outputs (to be generated)
 
 🚀 Ready to Execute:
 The system will now proceed with Phase 1. Multiple specialized agents will work in parallel where possible.
@@ -517,6 +626,20 @@ def main():
         # Create task files
         master_file = orchestrator.create_master_tasks_file(prompt, tasks, parallel_groups)
         dashboard_file = orchestrator.create_execution_dashboard(tasks, parallel_groups)
+
+        # Also create symlinks in main directory for backwards compatibility
+        main_master = TASKS_DIR / "MASTER_TASKS.md"
+        main_dashboard = TASKS_DIR / "EXECUTION_DASHBOARD.md"
+
+        # Remove old files if they exist
+        if main_master.exists():
+            main_master.unlink()
+        if main_dashboard.exists():
+            main_dashboard.unlink()
+
+        # Create symlinks to session files
+        main_master.symlink_to(master_file.relative_to(TASKS_DIR))
+        main_dashboard.symlink_to(dashboard_file.relative_to(TASKS_DIR))
 
         # Generate context injection
         context, todo_items = orchestrator.generate_context_injection(tasks, parallel_groups, master_file)
