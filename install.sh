@@ -151,23 +151,40 @@ if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
     python3 << EOF
 import json
 import os
+import re
 
 # Load the settings template
 with open('$REPO_DIR/.claude/settings-hook.json', 'r') as f:
     settings = json.load(f)
 
-# Update all hook commands to use local paths
+# Helper to rewrite hook commands to use hook_runner with python3
+def rewrite_command(cmd: str) -> str:
+    if not isinstance(cmd, str):
+        return cmd
+    # Normalize any global path to local path first
+    cmd = cmd.replace('~/.claude/hooks/claudook/', '.claude/hooks/claudook/')
+    # If already using hook_runner, keep as-is
+    if 'hook_runner.py' in cmd:
+        return cmd
+    # If the command references a claude hook script, wrap via hook_runner
+    m = re.search(r"\.claude/hooks/claudook/([^\s]+)\s*(.*)", cmd)
+    if m:
+        script = m.group(1)
+        rest = m.group(2).strip()
+        new_cmd = f"python3 .claude/hooks/claudook/hook_runner.py {script}"
+        if rest:
+            new_cmd += f" {rest}"
+        return new_cmd
+    return cmd
+
+# Update all hook commands to use local paths and hook_runner
 if 'hooks' in settings:
     for event_type in settings['hooks']:
         for hook_group in settings['hooks'][event_type]:
             if 'hooks' in hook_group:
                 for hook in hook_group['hooks']:
-                    if 'command' in hook and '~/.claude/hooks/claudook/' in hook['command']:
-                        # Replace global path with local path
-                        hook['command'] = hook['command'].replace(
-                            '~/.claude/hooks/claudook/',
-                            '.claude/hooks/claudook/'
-                        )
+                    if 'command' in hook:
+                        hook['command'] = rewrite_command(hook['command'])
 
 # Check if we need to merge with existing settings
 existing_settings = {}
@@ -176,8 +193,8 @@ if os.path.exists(settings_path):
     try:
         with open(settings_path, 'r') as f:
             existing_settings = json.load(f)
-    except:
-        pass
+    except Exception:
+        existing_settings = {}
 
 # Merge if existing settings found
 if existing_settings:
@@ -185,24 +202,27 @@ if existing_settings:
     if 'hooks' not in existing_settings:
         existing_settings['hooks'] = {}
 
-    # Add our hooks without overriding existing ones
+    # Add our hooks without overriding existing ones, and rewrite commands
     for event, hooks in settings.get('hooks', {}).items():
+        # Rewrite commands in incoming hooks too (defensive)
+        for group in hooks:
+            for h in group.get('hooks', []):
+                if 'command' in h:
+                    h['command'] = rewrite_command(h['command'])
         if event not in existing_settings['hooks']:
             existing_settings['hooks'][event] = hooks
         else:
-            # Check if claudook already exists to avoid duplicates
+            # Avoid duplicates if claudook hooks already present
             existing_str = str(existing_settings['hooks'][event])
-            if 'claudook' not in existing_str:
-                if isinstance(existing_settings['hooks'][event], list):
-                    existing_settings['hooks'][event].extend(hooks)
-
+            if 'claudook' not in existing_str and isinstance(existing_settings['hooks'][event], list):
+                existing_settings['hooks'][event].extend(hooks)
     settings = existing_settings
 
 # Write the settings
 with open(settings_path, 'w') as f:
     json.dump(settings, f, indent=2)
 
-print('✅ Local settings configured')
+print('✅ Local settings configured (python3 + hook_runner)')
 EOF
 fi
 

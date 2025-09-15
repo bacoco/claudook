@@ -21,8 +21,8 @@ fi
 mv "$CURRENT_DIR/.claude/settings.json" "$CURRENT_DIR/.claude/settings.json.disabled" 2>/dev/null
 
 if [ $? -eq 0 ]; then
-    echo "✅ Hooks disabled! (settings.json → settings.json.disabled)"
-    echo "To re-enable: ./claude/hooks/claudook/enable_hooks.sh"
+echo "✅ Hooks disabled! (settings.json → settings.json.disabled)"
+echo "To re-enable: .claude/hooks/claudook/enable_hooks.sh"
 else
     echo "⚠️ Hooks already disabled or error occurred"
 fi
