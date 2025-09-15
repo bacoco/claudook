@@ -264,7 +264,7 @@ async function main() {
       }
     }
 
-    console.log(chalk.purple('🚀 Try it out:'));
+    console.log(chalk.magenta('🚀 Try it out:'));
     console.log('  Ask Claude to create a feature and watch the automation!\n');
 
   } catch (error) {
