@@ -188,22 +188,22 @@ This works by renaming `settings.json` → `settings.json.disabled`, completely 
 ### 🧹 Uninstall Options
 
 ```bash
-# Uninstall from current project only
-./.claude/hooks/claudook/uninstall.sh
+# Uninstall from current project (or global if found)
+./uninstall-claudook.sh
 
-# Find and remove ALL Claudook installations in current directory tree
-./.claude/hooks/claudook/uninstall_all.sh
+# Find and remove ALL Claudook installations system-wide
+./find-and-remove-all-claudook.sh
 
-# Find and remove ALL Claudook installations from specific path
-./.claude/hooks/claudook/uninstall_all.sh /path/to/search
+# Find and remove ALL from specific path
+./find-and-remove-all-claudook.sh /path/to/search
 ```
 
-The uninstaller removes:
-- All hook files
-- Settings configurations
-- Task orchestration data
-- Analytics and backups
-- Empty .claude directories
+The uninstaller:
+- Detects both local and global installations
+- Asks for confirmation separately for each
+- Removes all Claudook files and data
+- Cleans up empty directories
+- Preserves non-Claudook files in ~/.claude/
 
 ## 🔥 Real-World Examples
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Uninstall all Claudook instances from your system
+# Find and remove ALL Claudook instances from your system
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -7,17 +7,30 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🔍 Claudook Uninstaller${NC}"
-echo "================================"
-
-# Find all .claude directories (excluding home directory)
-echo -e "${YELLOW}Searching for Claudook installations...${NC}"
+echo -e "${BLUE}🔍 Claudook System-Wide Finder & Remover${NC}"
+echo "=========================================="
 
 # Start from current directory or provided path
 SEARCH_PATH="${1:-$(pwd)}"
 
+echo -e "${YELLOW}Searching for ALL Claudook installations from: ${SEARCH_PATH}${NC}"
+
 # Find all .claude directories that contain claudook
-CLAUDOOK_DIRS=$(find "$SEARCH_PATH" -type d -path "*/.claude/hooks/claudook" 2>/dev/null | grep -v "$HOME/.claude")
+CLAUDOOK_DIRS=$(find "$SEARCH_PATH" -type d -path "*/.claude/hooks/claudook" 2>/dev/null)
+
+# Check global installation separately
+GLOBAL_FOUND=false
+if [ -d "$HOME/.claude/hooks/claudook" ]; then
+    GLOBAL_FOUND=true
+    # Add to list if not already included
+    if ! echo "$CLAUDOOK_DIRS" | grep -q "$HOME/.claude/hooks/claudook"; then
+        if [ -z "$CLAUDOOK_DIRS" ]; then
+            CLAUDOOK_DIRS="$HOME/.claude/hooks/claudook"
+        else
+            CLAUDOOK_DIRS="$CLAUDOOK_DIRS"$'\n'"$HOME/.claude/hooks/claudook"
+        fi
+    fi
+fi
 
 if [ -z "$CLAUDOOK_DIRS" ]; then
     echo -e "${GREEN}✅ No Claudook installations found${NC}"
@@ -25,22 +38,33 @@ if [ -z "$CLAUDOOK_DIRS" ]; then
 fi
 
 # Count installations
-COUNT=$(echo "$CLAUDOOK_DIRS" | wc -l | tr -d ' ')
+COUNT=$(echo "$CLAUDOOK_DIRS" | grep -c .)
 echo -e "${BLUE}Found ${COUNT} Claudook installation(s):${NC}"
 echo
 
 # List all found installations
 echo "$CLAUDOOK_DIRS" | while read -r dir; do
     PROJECT_DIR=$(dirname $(dirname $(dirname "$dir")))
-    echo -e "  📁 $PROJECT_DIR"
+    if [ "$PROJECT_DIR" = "$HOME" ]; then
+        echo -e "  ${RED}📁 GLOBAL: ~/.claude/${NC}"
+    else
+        echo -e "  📁 $PROJECT_DIR"
+    fi
 done
 
 echo
 echo -e "${YELLOW}⚠️  This will remove:${NC}"
-echo "  - All Claudook hook files"
-echo "  - Local settings.json files"
-echo "  - Task orchestration files"
-echo "  - Analytics and backup data"
+echo "  • All Claudook hook files"
+echo "  • Settings.json files (if they contain claudook)"
+echo "  • Task orchestration data"
+echo "  • Analytics and backup data"
+echo "  • Control files (choices_enabled, tests_enabled, etc.)"
+
+if [ "$GLOBAL_FOUND" = true ]; then
+    echo
+    echo -e "${RED}⚠️  WARNING: This includes the GLOBAL installation in ~/.claude/${NC}"
+fi
+
 echo
 
 # Ask for confirmation
@@ -54,27 +78,31 @@ fi
 
 # Remove each installation
 echo
-echo -e "${YELLOW}Removing Claudook installations...${NC}"
+echo -e "${YELLOW}Removing all Claudook installations...${NC}"
 
 echo "$CLAUDOOK_DIRS" | while read -r dir; do
     PROJECT_DIR=$(dirname $(dirname $(dirname "$dir")))
-    echo -e "${BLUE}Cleaning: $PROJECT_DIR${NC}"
+
+    if [ "$PROJECT_DIR" = "$HOME" ]; then
+        echo -e "${RED}Cleaning GLOBAL: ~/.claude/${NC}"
+    else
+        echo -e "${BLUE}Cleaning: $PROJECT_DIR${NC}"
+    fi
 
     # Remove claudook directory
     rm -rf "$dir"
     echo "  ✓ Removed hooks/claudook/"
 
-    # Remove settings.json if it exists
+    # Remove settings.json if it contains claudook
     SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
     if [ -f "$SETTINGS_FILE" ]; then
-        # Check if settings.json contains claudook references
         if grep -q "claudook" "$SETTINGS_FILE" 2>/dev/null; then
             rm -f "$SETTINGS_FILE"
             echo "  ✓ Removed settings.json"
         fi
     fi
 
-    # Remove disabled settings if exists
+    # Remove disabled settings
     rm -f "$PROJECT_DIR/.claude/settings.json.disabled" 2>/dev/null
 
     # Remove task orchestration data
@@ -101,8 +129,15 @@ echo "$CLAUDOOK_DIRS" | while read -r dir; do
         fi
     fi
 
-    # Remove .claude directory if empty
-    if [ -d "$PROJECT_DIR/.claude" ]; then
+    # Remove hooks directory if empty
+    if [ -d "$PROJECT_DIR/.claude/hooks" ]; then
+        if [ -z "$(ls -A "$PROJECT_DIR/.claude/hooks")" ]; then
+            rmdir "$PROJECT_DIR/.claude/hooks" 2>/dev/null
+        fi
+    fi
+
+    # Only remove .claude if it's NOT the global directory and is empty
+    if [ "$PROJECT_DIR" != "$HOME" ] && [ -d "$PROJECT_DIR/.claude" ]; then
         if [ -z "$(ls -A "$PROJECT_DIR/.claude")" ]; then
             rmdir "$PROJECT_DIR/.claude" 2>/dev/null
             echo "  ✓ Removed empty .claude/"
