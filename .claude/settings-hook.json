@@ -14,6 +14,21 @@
         ]
       }
     ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/claudook/git_backup.py"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/claudook/analytics_tracker.py"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
@@ -21,6 +36,14 @@
           {
             "type": "command",
             "command": ".claude/hooks/claudook/smart_controller.py post-tool"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/claudook/perf_optimizer.py"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/claudook/doc_enforcer.py"
           }
         ]
       }

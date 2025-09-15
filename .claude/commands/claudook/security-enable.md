@@ -7,6 +7,8 @@ Enable advanced security features including pre-tool security scanning.
 cp .claude/settings-advanced.json .claude/settings.json
 ```
 
+**Note**: This adds the Security Guard hook which blocks potentially dangerous commands before execution.
+
 ## What it enables:
 - **Security Guard**: Blocks dangerous commands before execution
 - **Git Backup**: Suggests backups before risky operations
