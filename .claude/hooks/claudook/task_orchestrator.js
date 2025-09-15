@@ -310,24 +310,45 @@ class TaskOrchestrator {
 
   process(input) {
     try {
-      // Check if parallel execution is enabled
-      if (!fs.existsSync(PARALLEL_ENABLED)) {
-        return;
+      // Always check if parallel execution is enabled
+      const parallelEnabled = fs.existsSync(PARALLEL_ENABLED);
+
+      let taskContent = '';
+
+      try {
+        const data = JSON.parse(input);
+
+        // Handle different input types
+        if (data.type === 'user_prompt') {
+          taskContent = data.content || '';
+        } else if (data.tool === 'TodoWrite' && data.params) {
+          // Handle TodoWrite events - extract todos
+          const todos = data.params.todos || [];
+          if (todos.length > 0) {
+            taskContent = todos.map(t => t.content || t.title || '').join(', ');
+
+            // Convert todos to tasks
+            this.tasks = todos.map(todo => ({
+              id: crypto.randomBytes(8).toString('hex'),
+              title: todo.content || todo.title || 'Task',
+              description: todo.activeForm || todo.content || '',
+              status: todo.status || 'pending',
+              priority: 'medium',
+              dependencies: [],
+              assignee: null,
+              created: new Date().toISOString()
+            }));
+          }
+        } else if (typeof data === 'string') {
+          taskContent = data;
+        }
+      } catch (parseError) {
+        // If not JSON, treat as plain text
+        taskContent = input.toString().trim();
       }
 
-      const data = JSON.parse(input);
-
-      // Only process user prompts
-      if (data.type !== 'user_prompt') {
-        return;
-      }
-
-      const prompt = data.content || '';
-
-      // Decompose tasks
-      this.decomposeTasks(prompt);
-
-      if (this.tasks.length > 1) {
+      // If we have tasks from TodoWrite, generate files
+      if (this.tasks.length > 0 && parallelEnabled) {
         // Analyze dependencies
         this.analyzeDependencies();
 
@@ -342,9 +363,32 @@ class TaskOrchestrator {
         console.log(`📋 Task Orchestrator: Created ${this.tasks.length} tasks`);
         console.log(`📁 Tasks saved to: .claude/tasks/session_${this.sessionId}/`);
         console.log(`🚀 Parallel execution groups: ${this.parallelGroups.length}`);
+      } else if (taskContent && parallelEnabled) {
+        // Decompose tasks from content
+        this.decomposeTasks(taskContent);
+
+        if (this.tasks.length > 1) {
+          // Analyze dependencies
+          this.analyzeDependencies();
+
+          // Identify parallel groups
+          this.identifyParallelGroups();
+
+          // Generate files
+          this.generateMasterTasks();
+          this.generateExecutionDashboard();
+          this.exportToGitHub();
+
+          console.log(`📋 Task Orchestrator: Created ${this.tasks.length} tasks`);
+          console.log(`📁 Tasks saved to: .claude/tasks/session_${this.sessionId}/`);
+          console.log(`🚀 Parallel execution groups: ${this.parallelGroups.length}`);
+        }
       }
     } catch (e) {
-      // Silent fail
+      // Log error for debugging but don't break
+      if (process.env.DEBUG) {
+        console.error('Task Orchestrator Error:', e);
+      }
     }
   }
 }
