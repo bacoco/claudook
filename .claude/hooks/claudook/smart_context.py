@@ -192,32 +192,45 @@ def get_environment_context():
 
 def get_smart_context():
     """Generate comprehensive project context."""
-    all_context = []
+    sections = []
 
-    # Git context (most important, show first)
+    # Git context
     git_ctx = get_git_context()
     if git_ctx:
-        all_context.extend(git_ctx[:2])  # Show only branch and changes
+        sections.append("📍 Git: " + " • ".join(git_ctx[:2]))  # Branch and changes
 
-    # Project type contexts (show only the main one)
+    # Project info
     node_ctx = get_node_context()
     if node_ctx:
-        all_context.append(node_ctx[0])  # Just project name/version
+        # Project name/version and scripts
+        project_info = []
+        if len(node_ctx) > 0:
+            project_info.append(node_ctx[0])  # Name/version
+        if len(node_ctx) > 1:
+            project_info.append(node_ctx[1])  # Scripts
+        if project_info:
+            sections.append("📦 " + " • ".join(project_info))
 
     python_ctx = get_python_context()
-    if python_ctx and not node_ctx:  # Only show if not a Node project
-        all_context.append(python_ctx[0])
+    if python_ctx and not node_ctx:
+        sections.append("🐍 " + " • ".join(python_ctx[:2]))
 
-    # Environment context (only critical items)
+    # Other important contexts
+    other_ctx = get_other_contexts()
+    if other_ctx:
+        # Show Docker, CI/CD, etc.
+        important_other = [c for c in other_ctx if "🐳" in c or "🔄" in c]
+        if important_other:
+            sections.append(" • ".join(important_other))
+
+    # Environment warnings (only if critical)
     env_ctx = get_environment_context()
-    for item in env_ctx:
-        if "Error logs" in item or "⚠️" in item:
-            all_context.append(item)  # Only show warnings
+    warnings = [item for item in env_ctx if "⚠️" in item]
+    if warnings:
+        sections.append(warnings[0])
 
-    if all_context:
-        # Keep it to max 3-4 lines
-        context_lines = all_context[:4]
-        return "📍 " + " • ".join(context_lines)
+    if sections:
+        return "\n".join(sections)
     else:
         return "📍 Project: " + os.path.basename(os.getcwd())
 

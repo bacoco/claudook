@@ -51,44 +51,38 @@ def get_session_context():
     # Build feature status
     features = []
     if choices_enabled:
-        features.append("A/B/C")
+        features.append("✅ A/B/C")
     if tests_enabled:
-        features.append("Tests")
+        features.append("✅ Tests")
 
+    lines = []
+
+    # Claudook status line
     if features:
-        status_line = f"🚀 Claudook Active [{' + '.join(features)}]"
+        lines.append(f"🚀 Claudook [{' • '.join(features)}] — /claudook/help for all commands")
     else:
-        status_line = "🚀 Claudook Ready"
+        lines.append("🚀 Claudook Ready — /claudook/help to get started")
 
-    # Show quick command reference
-    commands = [
-        status_line,
-        "",
-        "📋 Quick Commands:",
-        "  /claudook/help     - Show all commands",
-        "  /claudook/status   - Check current status"
-    ]
+    # Quick toggles (show what's not enabled)
+    quick_enables = []
+    if not choices_enabled:
+        quick_enables.append("/claudook/choices-enable")
+    if not tests_enabled:
+        quick_enables.append("/claudook/tests-enable")
 
-    # Add toggle commands based on current state
-    if choices_enabled:
-        commands.append("  /claudook/choices-disable - Turn off A/B/C")
-    else:
-        commands.append("  /claudook/choices-enable  - Turn on A/B/C")
+    if quick_enables:
+        lines.append(f"   Quick enable: {' • '.join(quick_enables)}")
 
-    if tests_enabled:
-        commands.append("  /claudook/tests-disable   - Turn off auto-tests")
-    else:
-        commands.append("  /claudook/tests-enable    - Turn on auto-tests")
-
-    # Show active behaviors if any features are on
-    if features:
-        commands.extend(["", "Active behaviors:"])
+    # If features are active, show what they do (very brief)
+    if choices_enabled or tests_enabled:
+        active = []
         if choices_enabled:
-            commands.append("  ✓ Will offer A/B/C options for complex tasks")
+            active.append("A/B/C options")
         if tests_enabled:
-            commands.append("  ✓ Will auto-create tests after code changes")
+            active.append("auto-tests")
+        lines.append(f"   Active: {', '.join(active)} on all code changes")
 
-    return "\n".join(commands)
+    return "\n".join(lines)
 
 def handle_post_tool_use():
     """Handle PostToolUse hook for test enforcement."""
