@@ -51,8 +51,9 @@ fi
 REPO_DIR=""
 TEMP_DIR=""
 
-# Check if we're in the claudook repo
-if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claudook/smart_controller.py" ]; then
+# Check if we're running from within the claudook repo itself
+# This check only applies when script is run directly, not via curl | bash
+if [ -n "${BASH_SOURCE[0]}" ] && [ "${BASH_SOURCE[0]}" != "/dev/stdin" ] && [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claudook/smart_controller.py" ]; then
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo -e "${GREEN}✅ Using local repository files${NC}"
 else
