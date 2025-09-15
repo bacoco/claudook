@@ -4,7 +4,7 @@ Reset Claudook configuration to default settings.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/config_manager.py --reset
+node .claude/hooks/claudook/config_manager.js --reset
 ```
 
 ## What gets reset:

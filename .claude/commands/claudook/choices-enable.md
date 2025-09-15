@@ -4,7 +4,7 @@ Enable A/B/C multiple choice options for complex decisions.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/toggle_controls.py enable-choices
+node .claude/hooks/claudook/toggle_controls.js enable-choices
 ```
 
 ## What it does:

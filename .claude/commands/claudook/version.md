@@ -4,7 +4,7 @@ Display the currently installed version of Claudook.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/version_check.py
+node .claude/hooks/claudook/version_check.js
 ```
 
 This command shows:

@@ -4,7 +4,7 @@ Run comprehensive security analysis on the current codebase.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/security_guard.py --full-scan
+node .claude/hooks/claudook/security_guard.js --full-scan
 ```
 
 ## What it checks:

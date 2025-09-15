@@ -4,7 +4,7 @@ Display all current Claudook configuration settings.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/config_manager.py --show
+node .claude/hooks/claudook/config_manager.js --show
 ```
 
 ## Shows:

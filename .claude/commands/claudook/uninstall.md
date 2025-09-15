@@ -4,7 +4,7 @@ Remove Claudook from the current project.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/uninstall.py
+node .claude/hooks/claudook/uninstall.js
 ```
 
 ## What gets removed:

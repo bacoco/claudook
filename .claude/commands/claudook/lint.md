@@ -4,7 +4,7 @@ Run comprehensive linting and code quality checks.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/code_quality.py --lint
+node .claude/hooks/claudook/code_quality.js --lint
 ```
 
 ## Checks performed:

@@ -4,7 +4,7 @@ Display current Claudook configuration and active features.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/toggle_controls.py status
+node .claude/hooks/claudook/toggle_controls.js status
 ```
 
 ## Information displayed:

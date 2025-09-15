@@ -4,7 +4,7 @@ Analyze code performance and identify bottlenecks.
 
 ## Usage
 ```bash
-python3 .claude/hooks/claudook/performance_optimizer.py --analyze
+node .claude/hooks/claudook/performance_optimizer.js --analyze
 ```
 
 ## Analysis includes:

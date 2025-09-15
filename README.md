@@ -1,6 +1,6 @@
 # 🚀 Claudook - Transform Claude into Your AI Development Powerhouse
 
-**Pure JavaScript. No Python Required.** Make Claude remember your project conventions, enforce quality standards, and work the way YOU want.
+**Pure JavaScript.** Make Claude remember your project conventions, enforce quality standards, and work the way YOU want.
 
 [![npm version](https://img.shields.io/npm/v/create-claudook.svg)](https://www.npmjs.com/package/create-claudook)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -122,7 +122,7 @@ After ANY code modification:
 ```
 🚫 BLOCKED - Cannot continue without tests!
 
-Creating tests for: user_auth.py
+Creating tests for: user_auth.js
 ✅ Unit tests created
 ✅ Integration tests created
 ✅ All tests passing (12/12)
@@ -365,7 +365,7 @@ if (pattern.test(command)) {
 }
 ```
 
-No Python. No path issues. Just clean JavaScript.
+No dependencies. No path issues. Just clean JavaScript.
 
 ## 💡 Why Claudook?
 
@@ -467,7 +467,7 @@ No system files touched. Complete removal.
 
 ### What's New in v2.1
 - ✅ **NPX installation** - `npx create-claudook`
-- ✅ **Pure JavaScript hooks** - No Python required
+- ✅ **Pure JavaScript hooks** - No external dependencies
 - ✅ **ES modules** - Modern JavaScript with import/export
 - ✅ **Interactive installer** - Guided setup with prompts
 - ✅ **Cross-platform** - Works on Windows, Mac, Linux
@@ -491,10 +491,10 @@ No system files touched. Complete removal.
 - **Clean Uninstall**: Comprehensive uninstall scripts in main directory
 
 ### Known Issues Fixed
-- ✅ Python dependency issues completely eliminated
+- ✅ Dependency issues completely eliminated
 - ✅ Path resolution problems solved
 - ✅ Hooks work from any directory
-- ✅ No more Python environment conflicts
+- ✅ No environment conflicts
 - ✅ Cross-platform compatibility
 - ✅ Automatic dependency management
 

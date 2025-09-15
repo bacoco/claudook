@@ -3,7 +3,7 @@
 Activate the parallel task orchestration system that decomposes complex requests into parallelizable subtasks.
 
 ```bash
-python3 .claude/hooks/claudook/toggle_controls.py enable-parallel
+node .claude/hooks/claudook/toggle_controls.js enable-parallel
 ```
 
 This enables:
