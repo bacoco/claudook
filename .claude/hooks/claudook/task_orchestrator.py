@@ -11,6 +11,33 @@ import hashlib
 from datetime import datetime
 from pathlib import Path
 
+from pathlib import Path
+
+# Robust path resolution - find and change to project root
+def find_project_root():
+    """Find project root by looking for .claude directory"""
+    current = Path.cwd().resolve()
+
+    # Search up the directory tree
+    for path in [current] + list(current.parents):
+        if (path / ".claude").is_dir():
+            return path
+
+    # Fallback: check if we're already in .claude/hooks/claudook
+    if current.name == "claudook" and current.parent.name == "hooks":
+        return current.parent.parent.parent
+
+    return None
+
+# Apply the fix before any other operations
+project_root = find_project_root()
+if project_root:
+    os.chdir(project_root)
+else:
+    # If can't find project root, exit gracefully
+    sys.exit(0)
+
+
 # Import the agent spawner
 sys.path.insert(0, str(Path(__file__).parent))
 from agent_spawner import AgentSpawner
