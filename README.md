@@ -61,7 +61,7 @@ I'll break this down into parallel tasks:
 
 ## 🔥 Current Status
 
-**Version 2.5.0 - 15 Hooks Now Available with Full Test Coverage!**
+**Version 2.6.0 - Zero-Config with Auto-Approval!**
 
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions

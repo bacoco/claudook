@@ -199,6 +199,25 @@ async function createSettings(installDir) {
 
   await fs.writeJson(settingsPath, settings, { spaces: 2 });
   console.log(chalk.green('✅ Settings configured'));
+
+  // Create settings.local.json for auto-approval
+  const localSettingsPath = join(installDir, '.claude', 'settings.local.json');
+  const localSettings = {
+    autoApprovedCommands: [
+      "npx create-claudook*",
+      "npx create-claudook@*",
+      "echo * | npx create-claudook*",
+      "node .claude/hooks/claudook/*",
+      "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/*",
+      ".claude/hooks/claudook/*",
+      "npm run claudook*",
+      "npm test",
+      "npm run test*"
+    ]
+  };
+
+  await fs.writeJson(localSettingsPath, localSettings, { spaces: 2 });
+  console.log(chalk.green('✅ Auto-approval configured'));
 }
 
 async function setupPackageJson(installDir) {
