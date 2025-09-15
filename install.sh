@@ -39,6 +39,14 @@ echo -e "${GREEN}✅ Python 3 detected${NC}"
 INSTALL_DIR=$(pwd)
 echo -e "${BLUE}📁 Installing to: ${CYAN}$INSTALL_DIR${NC}"
 
+# SAFETY CHECK: Prevent installation in global Claude directory
+if [ "$INSTALL_DIR" = "$HOME/.claude" ] || [ "$INSTALL_DIR" = "$HOME" ]; then
+    echo -e "${RED}❌ ERROR: Cannot install in global Claude directory!${NC}"
+    echo -e "${YELLOW}Claudook must be installed in individual project directories.${NC}"
+    echo -e "${YELLOW}Please navigate to your project directory and run the installer again.${NC}"
+    exit 1
+fi
+
 # Determine source directory
 REPO_DIR=""
 TEMP_DIR=""

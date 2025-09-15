@@ -134,6 +134,8 @@ Suggested safer alternative:
 
 ## 📦 Installation
 
+> ⚠️ **IMPORTANT**: Claudook installs **locally** in each project's `.claude/` directory, NOT globally in `~/.claude/`. This ensures each project can have its own configuration.
+
 ### Quick Install (30 seconds)
 
 Just tell Claude:
