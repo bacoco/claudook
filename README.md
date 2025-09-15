@@ -171,6 +171,20 @@ Once installed, you have new powers:
 | `/enable-tests` | Force test creation |
 | `/enable-parallel` | Activate parallel execution |
 
+### 🚨 Emergency Hook Control
+
+If hooks are blocking your work (like the perf_optimizer or doc_enforcer):
+
+```bash
+# Disable ALL hooks immediately (including safeguards)
+./.claude/hooks/claudook/disable_hooks.sh
+
+# Re-enable hooks when ready
+./.claude/hooks/claudook/enable_hooks.sh
+```
+
+This works by renaming `settings.json` → `settings.json.disabled`, completely disabling all hooks including security guards, performance optimizers, and test enforcers.
+
 ## 🔥 Real-World Examples
 
 ### Example 1: Building a Feature
