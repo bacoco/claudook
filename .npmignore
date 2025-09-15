@@ -1,0 +1,40 @@
+# Development files
+*.test.js
+jest.config.js
+.eslintrc*
+.prettierrc*
+
+# Git files
+.git/
+.gitignore
+
+# CI/CD
+.github/
+
+# Local test files
+test/
+tests/
+coverage/
+
+# Scripts not needed for npx
+scripts/
+install-*.sh
+uninstall*.sh
+
+# Documentation source
+docs/
+*.md
+!README.md
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+*.log
+*.tmp
+node_modules/
+package-lock.json

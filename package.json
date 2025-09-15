@@ -1,8 +1,12 @@
 {
-  "name": "claudook",
-  "version": "2.0.0",
+  "name": "create-claudook",
+  "version": "2.1.0",
   "description": "Transform Claude into Your AI Development Powerhouse - Pure JavaScript Edition",
-  "main": ".claude/hooks/claudook/runner.js",
+  "main": "bin/create-claudook.js",
+  "type": "module",
+  "bin": {
+    "create-claudook": "./bin/create-claudook.js"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -16,10 +20,32 @@
     "ai",
     "automation",
     "hooks",
-    "development"
+    "development",
+    "npx",
+    "create",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bacoco/claudook.git"
+  },
+  "homepage": "https://github.com/bacoco/claudook#readme",
+  "bugs": {
+    "url": "https://github.com/bacoco/claudook/issues"
+  },
+  "files": [
+    "bin/",
+    ".claude/",
+    "README.md",
+    "LICENSE"
   ],
   "author": "Claudook Team",
   "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.0",
+    "fs-extra": "^11.1.1"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",

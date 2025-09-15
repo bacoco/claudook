@@ -5,9 +5,9 @@
  * Tracks tool usage for insights
  */
 
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 function findProjectRoot(dir = process.cwd()) {
   while (dir !== '/') {
@@ -72,6 +72,17 @@ function trackUsage(input) {
     // Silent fail
   }
 
+  process.exit(0);
+}
+
+// Main execution
+if (process.argv[2] === 'status') {
+  if (fs.existsSync(analyticsFile)) {
+    const analytics = JSON.parse(fs.readFileSync(analyticsFile, 'utf8'));
+    console.log('Analytics Status:', analytics);
+  } else {
+    console.log('No analytics data yet');
+  }
   process.exit(0);
 }
 

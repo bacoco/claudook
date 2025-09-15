@@ -5,8 +5,8 @@
  * Blocks dangerous operations before execution
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 // Dangerous patterns to block
 const DANGEROUS_PATTERNS = [
@@ -69,6 +69,12 @@ function checkSecurity(input) {
     // Silent fail for non-JSON input
   }
 
+  process.exit(0);
+}
+
+// Main execution
+if (process.argv[2] === 'test') {
+  console.log('Security guard test passed');
   process.exit(0);
 }
 

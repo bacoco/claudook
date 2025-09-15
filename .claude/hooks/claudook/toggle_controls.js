@@ -5,8 +5,8 @@
  * Manages feature flags for Claudook
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 function findProjectRoot(dir = process.cwd()) {
   while (dir !== '/') {
