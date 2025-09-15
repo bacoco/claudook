@@ -63,7 +63,7 @@ fi
 
 # Get repo directory or download if not available
 REPO_DIR=""
-if [ -f "$(dirname "${BASH_SOURCE[0]}")/hooks/smart_controller.py" ]; then
+if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claude-hook/smart_controller.py" ]; then
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo -e "${GREEN}✅ Using local repository files${NC}"
 else
@@ -82,26 +82,26 @@ else
 fi
 
 # Verify required files exist
-if [ ! -f "$REPO_DIR/hooks/smart_controller.py" ]; then
+if [ ! -f "$REPO_DIR/.claude/hooks/claude-hook/smart_controller.py" ]; then
     echo -e "${RED}❌ Required hook files not found. Installation aborted.${NC}"
     exit 1
 fi
 
 # Create directories
 echo -e "${BLUE}📁 Creating directories...${NC}"
-mkdir -p ~/.claude/hooks ~/.claude/commands ~/.claude/analytics ~/.claude/backups
+mkdir -p ~/.claude/hooks/claude-hook ~/.claude/commands ~/.claude/analytics ~/.claude/backups
 
 # Copy hooks
 echo -e "${BLUE}🔧 Installing hooks...${NC}"
-cp -r "$REPO_DIR/hooks/"* ~/.claude/hooks/ 2>/dev/null || {
+cp -r "$REPO_DIR/.claude/hooks/claude-hook/"* ~/.claude/hooks/claude-hook/ 2>/dev/null || {
     echo -e "${RED}❌ Failed to copy hook files${NC}"
     exit 1
 }
-chmod +x ~/.claude/hooks/*.py
+chmod +x ~/.claude/hooks/claude-hook/*.py
 
-# Copy commands  
+# Copy commands
 echo -e "${BLUE}⚡ Installing slash commands...${NC}"
-cp -r "$REPO_DIR/commands/"* ~/.claude/commands/ 2>/dev/null || {
+cp -r "$REPO_DIR/.claude/commands/"* ~/.claude/commands/ 2>/dev/null || {
     echo -e "${YELLOW}⚠️ Slash commands not found, creating basic ones...${NC}"
     mkdir -p ~/.claude/commands
     
@@ -112,7 +112,7 @@ cp -r "$REPO_DIR/commands/"* ~/.claude/commands/ 2>/dev/null || {
 Check the current status of all Claude CLI automation hooks.
 
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py status
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
 ```
 EOF
     
@@ -122,7 +122,7 @@ EOF
 Activate the automatic A/B/C option system for complex questions.
 
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py enable-choices
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
 ```
 EOF
 
@@ -132,7 +132,7 @@ EOF
 Deactivate the automatic A/B/C option system.
 
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py disable-choices
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-choices
 ```
 EOF
 
@@ -142,7 +142,7 @@ EOF
 Activate mandatory test creation and execution after all code modifications.
 
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py enable-tests
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
 ```
 EOF
 
@@ -152,7 +152,7 @@ EOF
 Deactivate the mandatory test enforcement system.
 
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py disable-tests
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-tests
 ```
 EOF
 }
@@ -168,7 +168,7 @@ if [ -f ~/.claude/settings.json ]; then
 fi
 
 # Create or merge configuration
-if [ -f "$REPO_DIR/config/settings.json" ]; then
+if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
     if [ -f ~/.claude/settings.json ]; then
         echo -e "${BLUE}🔄 Merging with existing settings...${NC}"
         python3 << EOF
@@ -182,8 +182,8 @@ try:
 except:
     existing = {}
 
-# Load new hooks configuration  
-with open('$REPO_DIR/config/settings.json', 'r') as f:
+# Load new hooks configuration
+with open('$REPO_DIR/.claude/settings-hook.json', 'r') as f:
     new_config = json.load(f)
 
 # Merge hooks intelligently
@@ -209,7 +209,7 @@ print('✅ Settings merged successfully')
 EOF
     else
         echo -e "${BLUE}📝 Creating new settings file...${NC}"
-        cp "$REPO_DIR/config/settings.json" ~/.claude/settings.json
+        cp "$REPO_DIR/.claude/settings-hook.json" ~/.claude/settings.json
     fi
 else
     # Create basic settings file if config not found
@@ -222,11 +222,11 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/smart_controller.py session-start"
+            "command": "python3 ~/.claude/hooks/claude-hook/smart_controller.py session-start"
           },
           {
             "type": "command", 
-            "command": "python3 ~/.claude/hooks/smart_context.py"
+            "command": "python3 ~/.claude/hooks/claude-hook/smart_context.py"
           }
         ]
       }
@@ -237,15 +237,15 @@ else
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/security_guard.py"
+            "command": "python3 ~/.claude/hooks/claude-hook/security_guard.py"
           },
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/git_backup.py"  
+            "command": "python3 ~/.claude/hooks/claude-hook/git_backup.py"  
           },
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/analytics_tracker.py"
+            "command": "python3 ~/.claude/hooks/claude-hook/analytics_tracker.py"
           }
         ]
       }
@@ -256,15 +256,15 @@ else
         "hooks": [
           {
             "type": "command", 
-            "command": "python3 ~/.claude/hooks/smart_controller.py post-tool"
+            "command": "python3 ~/.claude/hooks/claude-hook/smart_controller.py post-tool"
           },
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/perf_optimizer.py"
+            "command": "python3 ~/.claude/hooks/claude-hook/perf_optimizer.py"
           },
           {
             "type": "command",
-            "command": "python3 ~/.claude/hooks/doc_enforcer.py"
+            "command": "python3 ~/.claude/hooks/claude-hook/doc_enforcer.py"
           }
         ]
       }
@@ -281,7 +281,7 @@ touch ~/.claude/tests_enabled
 
 # Test installation
 echo -e "${BLUE}🧪 Testing installation...${NC}"
-if python3 ~/.claude/hooks/toggle_controls.py status > /dev/null 2>&1; then
+if python3 ~/.claude/hooks/claude-hook/toggle_controls.py status > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Installation test passed${NC}"
 else
     echo -e "${YELLOW}⚠️ Installation test had issues, but continuing...${NC}"

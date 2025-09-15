@@ -71,10 +71,10 @@ def show_status():
   /status          - Show this status
 
 🎛️ Quick Toggle:
-  python3 ~/.claude/hooks/toggle_controls.py enable-choices
-  python3 ~/.claude/hooks/toggle_controls.py enable-tests
-  python3 ~/.claude/hooks/toggle_controls.py disable-tests
-  python3 ~/.claude/hooks/toggle_controls.py disable-choices
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-tests
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-choices
 
 📚 Features Overview:
 
@@ -114,8 +114,8 @@ COMMANDS:
   help              Show this help
 
 EXAMPLES:
-  python3 ~/.claude/hooks/toggle_controls.py enable-choices
-  python3 ~/.claude/hooks/toggle_controls.py status
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
+  python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
 
 IN CLAUDE CLI:
   Use slash commands for easier control:
