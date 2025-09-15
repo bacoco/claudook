@@ -12,36 +12,19 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}"
 cat << "EOF"
-   ______ _                 _        _    _             _
-  / _____| |               | |      | |  | |           | |
- | |     | | __ _ _   _  __| | ___  | |__| | ___   ___ | | __
- | |     | |/ _` | | | |/ _` |/ _ \ |  __  |/ _ \ / _ \| |/ /
- | |_____| | (_| | |_| | (_| |  __/ | |  | | (_) | (_) |   <
-  \______|_|\__,_|\__,_|\__,_|\___| |_|  |_|\___/ \___/|_|\_\
+   ______ _                 _             _
+  / _____| |               | |           | |
+ | |     | | __ _ _   _  __| | ___   ___ | | __
+ | |     | |/ _` | | | |/ _` |/ _ \ / _ \| |/ /
+ | |_____| | (_| | |_| | (_| | (_) | (_) |   <
+  \______|_|\__,_|\__,_|\__,_|\___/ \___/|_|\_\
 
-   _____ _                 _             _
-  / ____| |               | |           | |
- | |    | | __ _ _   _  __| | ___   ___ | | __
- | |    | |/ _` | | | |/ _` |/ _ \ / _ \| |/ /
- | |____| | (_| | |_| | (_| | (_) | (_) |   <
-  \_____|_|\__,_|\__,_|\__,_|\___/ \___/|_|\_\
+  LOCAL INSTALLATION
 EOF
 echo -e "${NC}"
 
-echo -e "${PURPLE}🚀 Installing Claudook Enhancement System...${NC}"
+echo -e "${PURPLE}🚀 Installing Claudook locally in current directory...${NC}"
 echo "=============================================="
-
-# Check if Claude CLI is installed
-if ! command -v claude &> /dev/null; then
-    echo -e "${RED}❌ Claude CLI not found.${NC}"
-    echo -e "${YELLOW}Please install it first:${NC}"
-    echo -e "${CYAN}npm install -g @anthropic-ai/claude-code${NC}"
-    echo ""
-    echo -e "${BLUE}For more info: https://docs.anthropic.com/en/docs/claude-code${NC}"
-    exit 1
-fi
-
-echo -e "${GREEN}✅ Claude CLI detected${NC}"
 
 # Check Python
 if ! command -v python3 &> /dev/null; then
@@ -52,7 +35,11 @@ fi
 
 echo -e "${GREEN}✅ Python 3 detected${NC}"
 
-# Determine if we're running from the repo or from curl/remote
+# Get the current directory
+INSTALL_DIR=$(pwd)
+echo -e "${BLUE}📁 Installing to: ${CYAN}$INSTALL_DIR${NC}"
+
+# Determine source directory
 REPO_DIR=""
 TEMP_DIR=""
 
@@ -60,26 +47,27 @@ TEMP_DIR=""
 if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claudook/smart_controller.py" ]; then
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo -e "${GREEN}✅ Using local repository files${NC}"
-# Check if script was downloaded to a specific location
-elif [ -f "${HOME}/.claudook-temp/.claude/hooks/claudook/smart_controller.py" ]; then
-    REPO_DIR="${HOME}/.claudook-temp"
-    echo -e "${GREEN}✅ Using cached files${NC}"
 else
     # Download from GitHub
     echo -e "${BLUE}📥 Downloading Claudook from GitHub...${NC}"
     TEMP_DIR=$(mktemp -d)
 
-    # Download method 1: Try using git (fastest)
+    # Download using git or curl/wget
     if command -v git &> /dev/null; then
         git clone --quiet --depth 1 https://github.com/bacoco/claudook "$TEMP_DIR" 2>/dev/null || {
             echo -e "${YELLOW}Git clone failed, trying alternative method...${NC}"
-            TEMP_DIR=""
+            rm -rf "$TEMP_DIR"
+            TEMP_DIR=$(mktemp -d)
+            if command -v curl &> /dev/null; then
+                curl -fsSL https://github.com/bacoco/claudook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+            elif command -v wget &> /dev/null; then
+                wget -qO- https://github.com/bacoco/claudook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+            else
+                echo -e "${RED}❌ Neither git, curl, nor wget found. Please install one.${NC}"
+                exit 1
+            fi
         }
-    fi
-
-    # Download method 2: Use curl/wget to download archive
-    if [ -z "$TEMP_DIR" ] || [ ! -d "$TEMP_DIR/.claude" ]; then
-        TEMP_DIR=$(mktemp -d)
+    else
         if command -v curl &> /dev/null; then
             curl -fsSL https://github.com/bacoco/claudook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
         elif command -v wget &> /dev/null; then
@@ -100,90 +88,136 @@ if [ ! -f "$REPO_DIR/.claude/hooks/claudook/smart_controller.py" ]; then
     exit 1
 fi
 
-# Create directories
-echo -e "${BLUE}📁 Creating directories...${NC}"
-mkdir -p ~/.claude/hooks/claudook
-mkdir -p ~/.claude/commands
+# Create local .claude directories
+echo -e "${BLUE}📁 Creating local .claude directories...${NC}"
+mkdir -p "$INSTALL_DIR/.claude/hooks/claudook"
+mkdir -p "$INSTALL_DIR/.claude/commands"
 
-# Copy ONLY the necessary files (not docs, tests, etc.)
-echo -e "${BLUE}🔧 Installing hooks...${NC}"
-cp "$REPO_DIR"/.claude/hooks/claudook/*.py ~/.claude/hooks/claudook/ 2>/dev/null || {
+# Copy hook files
+echo -e "${BLUE}🔧 Installing hooks locally...${NC}"
+cp "$REPO_DIR"/.claude/hooks/claudook/*.py "$INSTALL_DIR/.claude/hooks/claudook/" 2>/dev/null || {
     echo -e "${RED}❌ Failed to copy hook files${NC}"
     [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
 }
-chmod +x ~/.claude/hooks/claudook/*.py
+chmod +x "$INSTALL_DIR/.claude/hooks/claudook/"*.py
 
 # Copy command files
-echo -e "${BLUE}⚡ Installing slash commands...${NC}"
-cp "$REPO_DIR"/.claude/commands/*.md ~/.claude/commands/ 2>/dev/null || {
+echo -e "${BLUE}⚡ Installing slash commands locally...${NC}"
+cp "$REPO_DIR"/.claude/commands/*.md "$INSTALL_DIR/.claude/commands/" 2>/dev/null || {
     echo -e "${YELLOW}⚠️ Commands not found, creating basic ones...${NC}"
 }
 
-# Backup existing settings if they exist
-if [ -f ~/.claude/settings.json ]; then
-    echo -e "${YELLOW}💾 Backing up existing settings...${NC}"
-    cp ~/.claude/settings.json ~/.claude/settings.json.backup.$(date +%s)
+# Create local settings file
+echo -e "${BLUE}⚙️ Creating local settings configuration...${NC}"
+
+# Check if local settings already exist
+if [ -f "$INSTALL_DIR/.claude/settings.json" ]; then
+    echo -e "${YELLOW}💾 Backing up existing local settings...${NC}"
+    cp "$INSTALL_DIR/.claude/settings.json" "$INSTALL_DIR/.claude/settings.json.backup.$(date +%s)"
     echo -e "${GREEN}✅ Backup created${NC}"
 fi
 
-# Merge settings
-echo -e "${BLUE}⚙️ Configuring Claude settings...${NC}"
-
-# Check if settings-hook.json exists in repo
+# Copy settings file
 if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
-    if [ -f ~/.claude/settings.json ]; then
-        echo -e "${BLUE}🔄 Merging with existing settings...${NC}"
-        python3 << EOF
+    echo -e "${BLUE}📝 Creating local settings file...${NC}"
+
+    # Adjust paths in settings to be relative
+    python3 << EOF
 import json
 import os
 
-# Load existing settings
-try:
-    with open(os.path.expanduser('~/.claude/settings.json'), 'r') as f:
-        existing = json.load(f)
-except:
-    existing = {}
-
-# Load new hooks configuration
+# Load the settings template
 with open('$REPO_DIR/.claude/settings-hook.json', 'r') as f:
-    new_config = json.load(f)
+    settings = json.load(f)
 
-# Ensure hooks key exists
-if 'hooks' not in existing:
-    existing['hooks'] = {}
+# Update all hook commands to use local paths
+if 'hooks' in settings:
+    for event_type in settings['hooks']:
+        for hook_group in settings['hooks'][event_type]:
+            if 'hooks' in hook_group:
+                for hook in hook_group['hooks']:
+                    if 'command' in hook and '~/.claude/hooks/claudook/' in hook['command']:
+                        # Replace global path with local path
+                        hook['command'] = hook['command'].replace(
+                            '~/.claude/hooks/claudook/',
+                            '.claude/hooks/claudook/'
+                        )
 
-# Add our hooks without overriding existing ones
-for event, hooks in new_config.get('hooks', {}).items():
-    if event not in existing['hooks']:
-        existing['hooks'][event] = hooks
-    else:
-        # Check if claudook already exists to avoid duplicates
-        existing_str = str(existing['hooks'][event])
-        if 'claudook' not in existing_str:
-            if isinstance(existing['hooks'][event], list):
-                existing['hooks'][event].extend(hooks)
-            else:
-                existing['hooks'][event] = [existing['hooks'][event]] + hooks
+# Check if we need to merge with existing settings
+existing_settings = {}
+settings_path = '$INSTALL_DIR/.claude/settings.json'
+if os.path.exists(settings_path):
+    try:
+        with open(settings_path, 'r') as f:
+            existing_settings = json.load(f)
+    except:
+        pass
 
-# Write back
-with open(os.path.expanduser('~/.claude/settings.json'), 'w') as f:
-    json.dump(existing, f, indent=2)
+# Merge if existing settings found
+if existing_settings:
+    # Ensure hooks key exists
+    if 'hooks' not in existing_settings:
+        existing_settings['hooks'] = {}
 
-print('✅ Settings merged successfully')
+    # Add our hooks without overriding existing ones
+    for event, hooks in settings.get('hooks', {}).items():
+        if event not in existing_settings['hooks']:
+            existing_settings['hooks'][event] = hooks
+        else:
+            # Check if claudook already exists to avoid duplicates
+            existing_str = str(existing_settings['hooks'][event])
+            if 'claudook' not in existing_str:
+                if isinstance(existing_settings['hooks'][event], list):
+                    existing_settings['hooks'][event].extend(hooks)
+
+    settings = existing_settings
+
+# Write the settings
+with open(settings_path, 'w') as f:
+    json.dump(settings, f, indent=2)
+
+print('✅ Local settings configured')
 EOF
-    else
-        echo -e "${BLUE}📝 Creating new settings file...${NC}"
-        cp "$REPO_DIR/.claude/settings-hook.json" ~/.claude/settings.json
-    fi
-else
-    echo -e "${YELLOW}⚠️ Settings file not found in repo${NC}"
 fi
 
-# Enable features by default
-echo -e "${BLUE}🎯 Enabling default features...${NC}"
-touch ~/.claude/choices_enabled
-touch ~/.claude/tests_enabled
+# Create local feature flags
+echo -e "${BLUE}🎯 Enabling default features locally...${NC}"
+touch "$INSTALL_DIR/.claude/choices_enabled"
+touch "$INSTALL_DIR/.claude/tests_enabled"
+
+# Create CLAUDE.md file with local installation note
+echo -e "${BLUE}📝 Creating CLAUDE.md with local configuration...${NC}"
+cat > "$INSTALL_DIR/CLAUDE.md" << 'EOF'
+# Claudook Configuration
+
+This project has Claudook installed locally in the `.claude/` directory.
+
+## Local Installation
+Claudook is installed in this project's `.claude/` directory, providing project-specific enhancements without affecting global Claude settings.
+
+## Available Commands
+- `/status` - Check hook status
+- `/enable-choices` - Enable A/B/C options
+- `/disable-choices` - Disable A/B/C options
+- `/enable-tests` - Enable test enforcement
+- `/disable-tests` - Disable test enforcement
+
+## Features
+- Multiple Choice System (A/B/C options for complex tasks)
+- Test Enforcement (mandatory tests for code changes)
+- Security Guards (blocks dangerous operations)
+- Performance Optimization (automatic code improvements)
+- Documentation Enforcement (requires proper docs)
+
+## Project-Specific Configuration
+The hooks and settings are contained in:
+- `.claude/hooks/claudook/` - Hook scripts
+- `.claude/settings.json` - Local settings
+- `.claude/commands/` - Slash commands
+- `.claude/choices_enabled` - Feature flag
+- `.claude/tests_enabled` - Feature flag
+EOF
 
 # Clean up temp directory if used
 if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
@@ -192,8 +226,8 @@ if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
 fi
 
 # Test installation
-echo -e "${BLUE}🧪 Testing installation...${NC}"
-if python3 ~/.claude/hooks/claudook/toggle_controls.py status > /dev/null 2>&1; then
+echo -e "${BLUE}🧪 Testing local installation...${NC}"
+if python3 "$INSTALL_DIR/.claude/hooks/claudook/toggle_controls.py" status > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Installation test passed${NC}"
 else
     echo -e "${YELLOW}⚠️ Installation test had issues, but continuing...${NC}"
@@ -201,8 +235,10 @@ fi
 
 # Installation complete
 echo ""
-echo -e "${GREEN}🎉 Installation Complete!${NC}"
+echo -e "${GREEN}🎉 Local Installation Complete!${NC}"
 echo "=============================="
+echo ""
+echo -e "${BLUE}📁 Installed in: ${CYAN}$INSTALL_DIR/.claude/${NC}"
 echo ""
 echo -e "${BLUE}🎯 Available Commands:${NC}"
 echo "  ${YELLOW}/status${NC}           - Check current status"
@@ -218,13 +254,11 @@ echo "  ✅ Security Guards"
 echo "  ✅ Performance Optimization"
 echo "  ✅ Documentation Enforcement"
 echo ""
-echo -e "${RED}⚠️  IMPORTANT: You must restart Claude CLI for changes to take effect!${NC}"
-echo -e "${YELLOW}    Please exit Claude and run 'claude' again.${NC}"
+echo -e "${GREEN}✨ Claudook is now active for this project!${NC}"
 echo ""
-echo -e "${PURPLE}✨ Claudook enhancement system activated!${NC}"
-echo ""
-echo -e "${CYAN}Quick test after restart:${NC}"
-echo "  1. Exit Claude (type 'exit' or Ctrl+C)"
-echo "  2. Run 'claude' again"
-echo "  3. Type '/status' to verify installation"
+echo -e "${CYAN}This is a LOCAL installation:${NC}"
+echo "  • Files are in ${YELLOW}$INSTALL_DIR/.claude/${NC}"
+echo "  • Settings are project-specific"
+echo "  • Won't affect other Claude projects"
+echo "  • Works immediately (no restart needed)"
 echo ""
