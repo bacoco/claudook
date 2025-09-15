@@ -48,7 +48,7 @@ def get_session_context():
     choices_enabled = is_enabled(CHOICES_CONTROL)
     tests_enabled = is_enabled(TESTS_CONTROL)
 
-    # Build status line
+    # Build feature status
     features = []
     if choices_enabled:
         features.append("A/B/C")
@@ -56,24 +56,39 @@ def get_session_context():
         features.append("Tests")
 
     if features:
-        status_line = f"🚀 Claudook [{' + '.join(features)}] • /claudook/help"
+        status_line = f"🚀 Claudook Active [{' + '.join(features)}]"
     else:
-        status_line = "🚀 Claudook Ready • /claudook/help to start"
+        status_line = "🚀 Claudook Ready"
 
-    # Only show detailed instructions if features are enabled
-    instructions = []
+    # Show quick command reference
+    commands = [
+        status_line,
+        "",
+        "📋 Quick Commands:",
+        "  /claudook/help     - Show all commands",
+        "  /claudook/status   - Check current status"
+    ]
 
+    # Add toggle commands based on current state
     if choices_enabled:
-        instructions.append("📌 Will offer A/B/C options for complex tasks")
+        commands.append("  /claudook/choices-disable - Turn off A/B/C")
+    else:
+        commands.append("  /claudook/choices-enable  - Turn on A/B/C")
 
     if tests_enabled:
-        instructions.append("📌 Will auto-create tests after code changes")
-
-    # Combine everything concisely
-    if instructions:
-        return status_line + "\n" + "\n".join(instructions)
+        commands.append("  /claudook/tests-disable   - Turn off auto-tests")
     else:
-        return status_line
+        commands.append("  /claudook/tests-enable    - Turn on auto-tests")
+
+    # Show active behaviors if any features are on
+    if features:
+        commands.extend(["", "Active behaviors:"])
+        if choices_enabled:
+            commands.append("  ✓ Will offer A/B/C options for complex tasks")
+        if tests_enabled:
+            commands.append("  ✓ Will auto-create tests after code changes")
+
+    return "\n".join(commands)
 
 def handle_post_tool_use():
     """Handle PostToolUse hook for test enforcement."""

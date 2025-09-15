@@ -113,14 +113,22 @@ def show_status():
   🧪 Automatic Testing:      {tests_status}
   🚀 Parallel Task Execution: {parallel_status}
 
-💡 Control Commands:
-  /enable-choices   - Turn on A/B/C option system
-  /disable-choices  - Turn off A/B/C option system
-  /enable-tests     - Turn on mandatory testing
-  /disable-tests    - Turn off mandatory testing
-  /enable-parallel  - Turn on parallel task execution
-  /disable-parallel - Turn off parallel task execution
-  /status          - Show this status
+💡 Claudook Commands:
+  /claudook/help            - Show all available commands
+  /claudook/status          - Show this status
+  /claudook/choices-enable  - Turn on A/B/C option system
+  /claudook/choices-disable - Turn off A/B/C option system
+  /claudook/tests-enable    - Turn on mandatory testing
+  /claudook/tests-disable   - Turn off mandatory testing
+  /claudook/parallel-enable - Turn on parallel task execution
+  /claudook/parallel-disable - Turn off parallel task execution
+
+🎨 More Commands:
+  /claudook/security-check  - Run security analysis
+  /claudook/performance-check - Analyze performance
+  /claudook/lint            - Code quality checks
+  /claudook/config-show     - View configuration
+  /claudook/update          - Check for updates
 
 🎛️ Quick Toggle:
   python3 ~/.claude/hooks/claudook/toggle_controls.py enable-choices
@@ -178,11 +186,11 @@ EXAMPLES:
 
 IN CLAUDE CLI:
   Use slash commands for easier control:
-  /enable-choices
-  /disable-choices
-  /enable-tests
-  /disable-tests
-  /status
+  /claudook/help
+  /claudook/status
+  /claudook/choices-enable
+  /claudook/tests-enable
+  /claudook/parallel-enable
 
 FEATURES:
   🎯 Multiple Choices - Get A/B/C options for complex questions
