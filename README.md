@@ -312,12 +312,35 @@ Everything is customizable. Edit `.claude/hooks/` to:
 
 ## 🗑️ Uninstall
 
-Don't like it? Remove in one second:
+Multiple ways to remove Claudook:
+
+**Quick removal from current project:**
 ```bash
 rm -rf .claude/
 ```
 
+**Or use the uninstall scripts:**
+```bash
+./uninstall-claudook.sh              # Interactive uninstaller
+./find-and-remove-all-claudook.sh    # Find & remove all instances
+```
+
 No system files touched. No global changes. Complete removal.
+
+## 🔧 Recent Improvements
+
+### Latest Updates
+- **Robust Path Resolution**: All hooks now work from any subdirectory
+- **Session Folder Fix**: Task orchestration properly creates session folders with all files
+- **Global Install Protection**: Install script prevents accidental global installation
+- **Emergency Controls**: Quick disable/enable scripts for when hooks block work
+- **Clean Uninstall**: Comprehensive uninstall scripts in main directory
+
+### Known Issues Fixed
+- ✅ Hooks failing in subdirectories
+- ✅ Empty session folders in task orchestration
+- ✅ Settings permission syntax errors
+- ✅ Circular hook blocking
 
 ## 📈 Impact
 
