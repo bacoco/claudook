@@ -449,40 +449,39 @@ npm run validate
 
 ## 🗑️ Uninstall
 
-Multiple ways to remove Claudook:
-
-**Quick removal from current project:**
+**Remove from current project:**
 ```bash
 rm -rf .claude/
 ```
 
-**Or use the uninstall scripts:**
+**Uninstall global package (if installed globally):**
 ```bash
-bash scripts/uninstall-claudook.sh              # Interactive uninstaller
-bash scripts/find-and-remove-all-claudook.sh    # Find & remove all instances
+npm uninstall -g create-claudook
 ```
 
-No system files touched. No global changes. Complete removal.
+No system files touched. Complete removal.
 
-## 🎉 MAJOR UPDATE: Now 100% JavaScript!
+## 🎉 MAJOR UPDATE: NPX Package Available!
 
-**No more Python dependency issues!** Claudook has been completely rewritten in JavaScript, solving all path resolution problems once and for all.
+**Install with one command!** Claudook is now available as an npm package.
 
-### What's New
+### What's New in v2.1
+- ✅ **NPX installation** - `npx create-claudook`
 - ✅ **Pure JavaScript hooks** - No Python required
-- ✅ **npm/Node.js integration** - Use familiar JavaScript tools
-- ✅ **Comprehensive test suite** - Jest tests with 100% coverage
-- ✅ **Works from any directory** - No more "serpent qui se mord la queue" issues
-- ✅ **Faster execution** - Native Node.js performance
+- ✅ **ES modules** - Modern JavaScript with import/export
+- ✅ **Interactive installer** - Guided setup with prompts
+- ✅ **Cross-platform** - Works on Windows, Mac, Linux
+- ✅ **Automatic dependency management** - npm handles everything
 
 ## 🔧 Recent Improvements
 
-### Latest Updates (2025-01-15) - JavaScript Edition
-- **Hook Execution Fix**: All hooks now run through `python3` + `hook_runner.py` wrapper for robust execution
-- **Path Resolution**: Hooks automatically resolve to project root, fixing "No such file" errors
-- **Active Configuration**: Settings now properly activated via `.claude/settings.json`
-- **Feature Toggles**: All features (choices, tests, parallel) now fully functional
-- **Cross-Repository Safety**: Hooks handle directory changes and missing paths gracefully
+### Latest Updates (2025-01-15) - NPX Edition
+- **NPX Package**: Install with `npx create-claudook`
+- **100% JavaScript**: Pure Node.js with ES modules
+- **Interactive CLI**: Beautiful installer with prompts
+- **Automatic setup**: Dependencies installed automatically
+- **Cross-platform**: Works everywhere Node.js runs
+- **Version management**: npm handles updates
 
 ### Previous Updates
 - **Robust Path Resolution**: All hooks now work from any subdirectory
@@ -492,12 +491,12 @@ No system files touched. No global changes. Complete removal.
 - **Clean Uninstall**: Comprehensive uninstall scripts in main directory
 
 ### Known Issues Fixed
-- ✅ Hooks failing with exit code 127 (/bin/sh execution)
-- ✅ "No such file or directory" errors in subdirectories
-- ✅ Hooks failing in subdirectories
-- ✅ Empty session folders in task orchestration
-- ✅ Settings permission syntax errors
-- ✅ Circular hook blocking
+- ✅ Python dependency issues completely eliminated
+- ✅ Path resolution problems solved
+- ✅ Hooks work from any directory
+- ✅ No more Python environment conflicts
+- ✅ Cross-platform compatibility
+- ✅ Automatic dependency management
 
 ## 📈 Impact
 
@@ -530,10 +529,16 @@ A: No, everything runs locally in your project.
 Stop reading. Start building better.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
+npx create-claudook
 ```
 
 Then ask Claude to build something complex and watch the magic happen.
+
+## 📦 npm Package
+
+- **Package**: [create-claudook](https://www.npmjs.com/package/create-claudook)
+- **Version**: 2.1.0
+- **License**: MIT
 
 ---
 
