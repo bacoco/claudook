@@ -260,10 +260,10 @@ Once installed, you have new commands:
 
 | Command | Power Unlocked |
 |---------|---------------|
-| `/status` | See all active features |
-| `/enable-parallel` | Activate parallel task execution |
-| `/enable-choices` | Turn on A/B/C option system |
-| `/enable-tests` | Force test creation |
+| `/claudook/status` | See all active features |
+| `/claudook/parallel-enable` | Activate parallel task execution |
+| `/claudook/choices-enable` | Turn on A/B/C option system |
+| `/claudook/tests-enable` | Force test creation |
 | `/task-status` | View execution dashboard |
 
 ## Advanced: The Parallel Execution Dashboard
@@ -390,7 +390,7 @@ Stop reading. Start building better.
 curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
 
 # Enable parallel execution
-/enable-parallel
+/claudook/parallel-enable
 
 # Give Claude a complex task
 "Build a complete user management system with OAuth, 2FA, and admin panel"

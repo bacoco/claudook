@@ -165,21 +165,21 @@ Complete authentication system with:
 
 ### Enable/Disable Parallel Execution
 ```bash
-/enable-parallel   # Turn on parallel task execution
-/disable-parallel  # Turn off (sequential mode)
+/claudook/parallel-enable   # Turn on parallel task execution
+/claudook/parallel-disable  # Turn off (sequential mode)
 ```
 
 ### Task Management
 ```bash
-/task-status       # Show current task progress
-/agent-status      # Show active agents
-/task-reset        # Clear all tasks
+/claudook/task-status       # Show current task progress
+/claudook/agent-status      # Show active agents
+/claudook/task-reset        # Clear all tasks
 ```
 
 ### Manual Control
 ```bash
-/task-complete 001 # Manually mark task as complete
-/agent-spawn coder # Manually spawn an agent
+/claudook/task-complete 001 # Manually mark task as complete
+/claudook/agent-spawn coder # Manually spawn an agent
 ```
 
 ## Configuration

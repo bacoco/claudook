@@ -162,14 +162,22 @@ your-project/
 
 ## 🎮 Commands
 
-Once installed, you have new powers:
+Once installed, all commands are organized under the `/claudook/` namespace:
 
+### Quick Reference
 | Command | What it does |
 |---------|-------------|
-| `/status` | See what's enabled |
-| `/enable-choices` | Turn on A/B/C options |
-| `/enable-tests` | Force test creation |
-| `/enable-parallel` | Activate parallel execution |
+| `/claudook/help` | Show all available commands |
+| `/claudook/status` | See current configuration |
+| `/claudook/choices-enable` | Turn on A/B/C options |
+| `/claudook/tests-enable` | Force test creation |
+| `/claudook/parallel-enable` | Activate parallel execution |
+
+### Full Command List
+- **Core**: `/claudook/help`, `/claudook/status`, `/claudook/version`
+- **Features**: `/claudook/choices-enable`, `/claudook/tests-enable`, `/claudook/parallel-enable`
+- **Analysis**: `/claudook/security-check`, `/claudook/performance-check`, `/claudook/lint`
+- **Config**: `/claudook/config-show`, `/claudook/config-reset`, `/claudook/update`
 
 ### 🚨 Emergency Hook Control
 
@@ -279,7 +287,7 @@ No magic. Just smart automation at the right moments.
 
 2. **Check it's working**
    ```
-   /status
+   /claudook/status
    ```
 
 3. **Try it out**
@@ -363,7 +371,7 @@ A: Yes, works with any Claude through the CLI.
 A: No, hooks run instantly. Parallel execution actually makes complex tasks faster.
 
 **Q: Can I disable features I don't want?**
-A: Yes, everything is toggleable with commands like `/disable-tests`.
+A: Yes, everything is toggleable with commands like `/claudook/tests-disable`.
 
 **Q: Is my code being sent anywhere?**
 A: No, everything runs locally in your project.

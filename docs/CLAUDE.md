@@ -35,8 +35,8 @@ Installs Claudook **locally** in the current project:
 ## Available Commands
 
 After installation:
-- `/status` - Check hook status
-- `/enable-choices` - Enable A/B/C options
-- `/disable-choices` - Disable A/B/C options
-- `/enable-tests` - Enable test enforcement
-- `/disable-tests` - Disable test enforcement
+- `/claudook/status` - Check hook status
+- `/claudook/choices-enable` - Enable A/B/C options
+- `/claudook/choices-disable` - Disable A/B/C options
+- `/claudook/tests-enable` - Enable test enforcement
+- `/claudook/tests-disable` - Disable test enforcement
