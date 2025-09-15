@@ -114,6 +114,13 @@ async function createSettings(installDir) {
   }
 
   const settings = {
+    autoApprovedCommands: [
+      "node .claude/hooks/claudook/*.js *",
+      "node .claude/hooks/claudook/toggle_controls.js *",
+      "node .claude/hooks/claudook/analytics_tracker.js *",
+      "node .claude/hooks/claudook/security_guard.js *",
+      "node .claude/hooks/claudook/git_backup.js *"
+    ],
     hooks: {
       before_tool_use: [
         {
