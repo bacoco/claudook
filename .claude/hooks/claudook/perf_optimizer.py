@@ -46,10 +46,10 @@ def get_optimization_tools(file_extension):
     
     tools_map = {
         '.py': {
-            'formatter': 'black --line-length 88',
-            'linter': 'flake8',
-            'import_sorter': 'isort',
-            'type_checker': 'mypy',
+            'formatter': 'python3 -m black --line-length 88',
+            'linter': 'python3 -m flake8',
+            'import_sorter': 'python3 -m isort',
+            'type_checker': 'python3 -m mypy',
             'description': 'Python optimization'
         },
         '.js': {

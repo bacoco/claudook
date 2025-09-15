@@ -4,6 +4,8 @@ Claudook - Dependency Analyzer
 Builds Directed Acyclic Graphs (DAG) for task dependencies and identifies parallel execution opportunities.
 """
 import json
+import sys
+import os
 from typing import List, Dict, Set, Tuple, Optional
 from collections import defaultdict, deque
 
@@ -260,9 +262,7 @@ class DependencyGraph:
                 task = self.nodes[task_id]
                 deps = list(self.edges.get(task_id, []))
                 dep_str = f" <- {', '.join(deps)}" if deps else " (no deps)"
-                lines.append(f"- [{task_id}] {task.get('description', '')}
-
-{dep_str}")
+                lines.append(f"- [{task_id}] {task.get('description', '')}{dep_str}")
 
         # Add parallel groups
         lines.append("\n## Parallel Execution Groups")
@@ -393,22 +393,20 @@ class DependencyAnalyzer:
 
         # Analyze current parallel efficiency
         current_efficiency = self.graph.calculate_parallel_efficiency()
-
         if current_efficiency < 50:
             suggestions.append({
                 "type": "efficiency",
                 "message": f"Low parallel efficiency ({current_efficiency:.1f}%)",
-                "suggestion": "Consider breaking down large tasks or removing unnecessary dependencies"
+                "recommendation": "Consider reducing unnecessary dependencies and marking safe tasks as parallel_safe"
             })
 
-        # Check for long sequential chains
-        critical_path, critical_time = self.graph.get_critical_path()
-        if len(critical_path) > 5:
+        # Suggest moving documentation and research tasks earlier
+        doc_tasks = [t for t in tasks if t.get("agent_type") == "documenter"]
+        if doc_tasks:
             suggestions.append({
-                "type": "critical_path",
-                "message": f"Long critical path with {len(critical_path)} sequential tasks",
-                "suggestion": "Consider if some tasks can be made independent",
-                "path": critical_path
+                "type": "ordering",
+                "message": "Documentation tasks detected",
+                "recommendation": "Schedule documentation planning in early parallel phases"
             })
 
         # Check for bottleneck tasks
