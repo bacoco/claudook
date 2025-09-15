@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
+const { blue, green, red, yellow, cyan } = chalk;
 import inquirer from 'inquirer';
 import { execSync } from 'child_process';
 
@@ -230,7 +231,7 @@ Installed with npx create-claudook
 async function main() {
   console.clear();
   console.log(banner);
-  console.log(chalk.purple('🚀 Installing Claudook...\n'));
+  console.log(chalk.magenta('🚀 Installing Claudook...\n'));
 
   try {
     await checkNodeVersion();

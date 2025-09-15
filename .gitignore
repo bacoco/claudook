@@ -19,6 +19,7 @@
 
 # Dependencies
 node_modules/
+package-lock.json
 
 # Environment variables
 .env
@@ -27,3 +28,14 @@ node_modules/
 # Build outputs
 dist/
 build/
+
+# Local Claude installation files
+.claude/analytics.json
+.claude/settings.json
+.claude/settings.local.json
+.claude/settings-*.json
+.claude/choices_enabled
+.claude/tests_enabled
+.claude/parallel_enabled
+.claude/*.backup.*
+.claude/tasks/
