@@ -34,9 +34,48 @@ Installs Claudook **locally** in the current project:
 
 ## Available Commands
 
-After installation:
-- `/claudook/status` - Check hook status
-- `/claudook/choices-enable` - Enable A/B/C options
+After installation, all commands use the `/claudook/` namespace:
+
+### Core Commands
+- `/claudook/help` - Show all available commands
+- `/claudook/status` - Check current configuration and active features
+- `/claudook/version` - Show installed version
+
+### Feature Toggles
+- `/claudook/choices-enable` - Enable A/B/C options for complex tasks
 - `/claudook/choices-disable` - Disable A/B/C options
-- `/claudook/tests-enable` - Enable test enforcement
+- `/claudook/tests-enable` - Enable mandatory test enforcement
 - `/claudook/tests-disable` - Disable test enforcement
+- `/claudook/parallel-enable` - Enable parallel task execution
+- `/claudook/parallel-disable` - Disable parallel task execution
+
+### Analysis & Quality
+- `/claudook/security-check` - Run security analysis on code
+- `/claudook/performance-check` - Analyze performance bottlenecks
+- `/claudook/lint` - Run code quality checks
+
+### Configuration
+- `/claudook/config-show` - Display all settings
+- `/claudook/config-reset` - Reset to defaults
+- `/claudook/update` - Check for and install updates
+- `/claudook/uninstall` - Remove Claudook from project
+
+## Session Start Display
+
+When you start a new Claude session with Claudook installed, you'll see:
+
+```
+🚀 Claudook Active [A/B/C + Tests]
+
+📋 Quick Commands:
+  /claudook/help     - Show all commands
+  /claudook/status   - Check current status
+  /claudook/choices-disable - Turn off A/B/C
+  /claudook/tests-disable   - Turn off auto-tests
+
+Active behaviors:
+  ✓ Will offer A/B/C options for complex tasks
+  ✓ Will auto-create tests after code changes
+```
+
+The display adapts based on which features are enabled, showing only relevant commands and active behaviors.

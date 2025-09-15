@@ -150,14 +150,44 @@ curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | b
 
 **That's it!** No configuration needed. Works immediately.
 
+### What You'll See After Installation
+
+```
+🎉 Local Installation Complete!
+==============================
+
+📁 Installed in: /your-project/.claude/
+
+🎯 Available Commands:
+  /claudook/help           - Show all available commands
+  /claudook/status         - Check current status
+  /claudook/choices-enable  - Turn on A/B/C options
+  /claudook/tests-enable    - Turn on mandatory testing
+
+✨ Claudook is now active for this project!
+```
+
 ### What Gets Installed
 
 ```
 your-project/
 └── .claude/
-    ├── hooks/        # Automation scripts
-    ├── commands/     # New Claude commands
-    └── settings.json # Your project config
+    ├── hooks/
+    │   └── claudook/     # All automation scripts
+    ├── commands/
+    │   └── claudook/     # All slash commands
+    └── settings.json     # Your project config
+```
+
+### Starting a New Session
+
+When you start Claude after installation, you'll see:
+```
+🚀 Claudook Active [A/B/C + Tests]
+
+📋 Quick Commands:
+  /claudook/help     - Show all commands
+  /claudook/status   - Check current status
 ```
 
 ## 🎮 Commands
