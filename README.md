@@ -177,10 +177,10 @@ If hooks are blocking your work (like the perf_optimizer or doc_enforcer):
 
 ```bash
 # Disable ALL hooks immediately (including safeguards)
-./.claude/hooks/claudook/disable_hooks.sh
+.claude/hooks/claudook/disable_hooks.sh
 
 # Re-enable hooks when ready
-./.claude/hooks/claudook/enable_hooks.sh
+.claude/hooks/claudook/enable_hooks.sh
 ```
 
 This works by renaming `settings.json` → `settings.json.disabled`, completely disabling all hooks including security guards, performance optimizers, and test enforcers.
@@ -189,13 +189,13 @@ This works by renaming `settings.json` → `settings.json.disabled`, completely 
 
 ```bash
 # Uninstall from current project (or global if found)
-./uninstall-claudook.sh
+bash scripts/uninstall-claudook.sh
 
 # Find and remove ALL Claudook installations system-wide
-./find-and-remove-all-claudook.sh
+bash scripts/find-and-remove-all-claudook.sh
 
 # Find and remove ALL from specific path
-./find-and-remove-all-claudook.sh /path/to/search
+bash scripts/find-and-remove-all-claudook.sh /path/to/search
 ```
 
 The uninstaller:
@@ -321,8 +321,8 @@ rm -rf .claude/
 
 **Or use the uninstall scripts:**
 ```bash
-./uninstall-claudook.sh              # Interactive uninstaller
-./find-and-remove-all-claudook.sh    # Find & remove all instances
+bash scripts/uninstall-claudook.sh              # Interactive uninstaller
+bash scripts/find-and-remove-all-claudook.sh    # Find & remove all instances
 ```
 
 No system files touched. No global changes. Complete removal.
