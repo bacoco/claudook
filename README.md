@@ -61,7 +61,7 @@ I'll break this down into parallel tasks:
 
 ## 🔥 Current Status
 
-**Version 2.7.1 - Fixed! Works everywhere with absolute paths!**
+**Version 2.7.4 - ES Module Support Added! Hooks now work reliably!**
 
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions
@@ -497,7 +497,10 @@ No system files touched. Complete removal.
 
 ## 🔧 Recent Improvements
 
-### Latest Updates (2025-01-15) - NPX Edition
+### Latest Updates (2025-01-15) - Version 2.7.4
+- **ES Module Support**: Added automatic `"type": "module"` to package.json
+- **Hook Reliability**: Fixed module loading issues that prevented hooks from running
+- **Template Literals**: All paths now use proper JavaScript template strings
 - **NPX Package**: Install with `npx create-claudook`
 - **100% JavaScript**: Pure Node.js with ES modules
 - **Interactive CLI**: Beautiful installer with prompts
