@@ -12,21 +12,21 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}"
 cat << "EOF"
-   ______ _                 _        _    _             _    
-  / _____| |               | |      | |  | |           | |   
+   ______ _                 _        _    _             _
+  / _____| |               | |      | |  | |           | |
  | |     | | __ _ _   _  __| | ___  | |__| | ___   ___ | | __
  | |     | |/ _` | | | |/ _` |/ _ \ |  __  |/ _ \ / _ \| |/ /
- | |_____| | (_| | |_| | (_| |  __/ | |  | | (_) | (_) |   < 
+ | |_____| | (_| | |_| | (_| |  __/ | |  | | (_) | (_) |   <
   \______|_|\__,_|\__,_|\__,_|\___| |_|  |_|\___/ \___/|_|\_\
-                                                             
-   ____                                                     
-  / ____|                                                   
+
+   ____
+  / ____|
  | (___  _   _ _ __   ___ _ __ _ __   _____      _____ _ __ ___
   \___ \| | | | '_ \ / _ \ '__| '_ \ / _ \ \ /\ / / _ \ '__/ __|
   ____) | |_| | |_) |  __/ |  | |_) | (_) \ V  V /  __/ |  \__ \
  |_____/ \__,_| .__/ \___|_|  | .__/ \___/ \_/\_/ \___|_|  |___/
-              | |            | |                               
-              |_|            |_|                               
+              | |            | |
+              |_|            |_|
 EOF
 echo -e "${NC}"
 
@@ -54,111 +54,73 @@ fi
 
 echo -e "${GREEN}✅ Python 3 detected${NC}"
 
-# Check if jq is available (helpful but not required)
-if command -v jq &> /dev/null; then
-    echo -e "${GREEN}✅ jq detected (JSON processing will be faster)${NC}"
-else
-    echo -e "${YELLOW}💡 Consider installing jq for better JSON processing${NC}"
-fi
-
-# Get repo directory or download if not available
+# Determine if we're running from the repo or from curl/remote
 REPO_DIR=""
+TEMP_DIR=""
+
+# Check if we're in the claude-hook repo
 if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claude-hook/smart_controller.py" ]; then
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo -e "${GREEN}✅ Using local repository files${NC}"
+# Check if script was downloaded to a specific location
+elif [ -f "${HOME}/.claude-hook-temp/.claude/hooks/claude-hook/smart_controller.py" ]; then
+    REPO_DIR="${HOME}/.claude-hook-temp"
+    echo -e "${GREEN}✅ Using cached files${NC}"
 else
-    echo -e "${BLUE}📥 Downloading latest files from GitHub...${NC}"
+    # Download from GitHub
+    echo -e "${BLUE}📥 Downloading Claude Hook from GitHub...${NC}"
     TEMP_DIR=$(mktemp -d)
-    if command -v curl &> /dev/null; then
-        curl -fsSL https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR"
-        REPO_DIR="$TEMP_DIR/claude-hook-main"
-    elif command -v wget &> /dev/null; then
-        wget -qO- https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR"
-        REPO_DIR="$TEMP_DIR/claude-hook-main"
-    else
-        echo -e "${RED}❌ Neither curl nor wget found. Please install one of them.${NC}"
-        exit 1
+
+    # Download method 1: Try using git (fastest)
+    if command -v git &> /dev/null; then
+        git clone --quiet --depth 1 https://github.com/bacoco/claude-hook "$TEMP_DIR" 2>/dev/null || {
+            echo -e "${YELLOW}Git clone failed, trying alternative method...${NC}"
+            TEMP_DIR=""
+        }
     fi
+
+    # Download method 2: Use curl/wget to download archive
+    if [ -z "$TEMP_DIR" ] || [ ! -d "$TEMP_DIR/.claude" ]; then
+        TEMP_DIR=$(mktemp -d)
+        if command -v curl &> /dev/null; then
+            curl -fsSL https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+        elif command -v wget &> /dev/null; then
+            wget -qO- https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+        else
+            echo -e "${RED}❌ Neither git, curl, nor wget found. Please install one.${NC}"
+            exit 1
+        fi
+    fi
+
+    REPO_DIR="$TEMP_DIR"
 fi
 
 # Verify required files exist
 if [ ! -f "$REPO_DIR/.claude/hooks/claude-hook/smart_controller.py" ]; then
     echo -e "${RED}❌ Required hook files not found. Installation aborted.${NC}"
+    [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
 fi
 
 # Create directories
 echo -e "${BLUE}📁 Creating directories...${NC}"
-mkdir -p ~/.claude/hooks/claude-hook ~/.claude/commands ~/.claude/analytics ~/.claude/backups
+mkdir -p ~/.claude/hooks/claude-hook
+mkdir -p ~/.claude/commands
 
-# Copy hooks
+# Copy ONLY the necessary files (not docs, tests, etc.)
 echo -e "${BLUE}🔧 Installing hooks...${NC}"
-cp -r "$REPO_DIR/.claude/hooks/claude-hook/"* ~/.claude/hooks/claude-hook/ 2>/dev/null || {
+cp "$REPO_DIR"/.claude/hooks/claude-hook/*.py ~/.claude/hooks/claude-hook/ 2>/dev/null || {
     echo -e "${RED}❌ Failed to copy hook files${NC}"
+    [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
 }
 chmod +x ~/.claude/hooks/claude-hook/*.py
 
-# Copy commands
+# Copy command files
 echo -e "${BLUE}⚡ Installing slash commands...${NC}"
-cp -r "$REPO_DIR/.claude/commands/"* ~/.claude/commands/ 2>/dev/null || {
-    echo -e "${YELLOW}⚠️ Slash commands not found, creating basic ones...${NC}"
-    mkdir -p ~/.claude/commands
-    
-    # Create basic commands if not found
-    cat > ~/.claude/commands/status.md << 'EOF'
-# Hooks Status
-
-Check the current status of all Claude CLI automation hooks.
-
-```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
-```
-EOF
-    
-    cat > ~/.claude/commands/enable-choices.md << 'EOF'
-# Enable Multiple Choices
-
-Activate the automatic A/B/C option system for complex questions.
-
-```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
-```
-EOF
-
-    cat > ~/.claude/commands/disable-choices.md << 'EOF'
-# Disable Multiple Choices
-
-Deactivate the automatic A/B/C option system.
-
-```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-choices
-```
-EOF
-
-    cat > ~/.claude/commands/enable-tests.md << 'EOF'
-# Enable Automatic Tests
-
-Activate mandatory test creation and execution after all code modifications.
-
-```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
-```
-EOF
-
-    cat > ~/.claude/commands/disable-tests.md << 'EOF'
-# Disable Automatic Tests
-
-Deactivate the mandatory test enforcement system.
-
-```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-tests
-```
-EOF
+cp "$REPO_DIR"/.claude/commands/*.md ~/.claude/commands/ 2>/dev/null || {
+    echo -e "${YELLOW}⚠️ Commands not found, creating basic ones...${NC}"
 }
-
-# Setup configuration
-echo -e "${BLUE}⚙️ Setting up configuration...${NC}"
 
 # Backup existing settings if they exist
 if [ -f ~/.claude/settings.json ]; then
@@ -167,7 +129,10 @@ if [ -f ~/.claude/settings.json ]; then
     echo -e "${GREEN}✅ Backup created${NC}"
 fi
 
-# Create or merge configuration
+# Merge settings
+echo -e "${BLUE}⚙️ Configuring Claude settings...${NC}"
+
+# Check if settings-hook.json exists in repo
 if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
     if [ -f ~/.claude/settings.json ]; then
         echo -e "${BLUE}🔄 Merging with existing settings...${NC}"
@@ -186,20 +151,22 @@ except:
 with open('$REPO_DIR/.claude/settings-hook.json', 'r') as f:
     new_config = json.load(f)
 
-# Merge hooks intelligently
+# Ensure hooks key exists
 if 'hooks' not in existing:
     existing['hooks'] = {}
 
 # Add our hooks without overriding existing ones
-for event, hooks in new_config['hooks'].items():
+for event, hooks in new_config.get('hooks', {}).items():
     if event not in existing['hooks']:
         existing['hooks'][event] = hooks
     else:
-        print(f"Note: Existing {event} hooks found, adding to them...")
-        if isinstance(existing['hooks'][event], list):
-            existing['hooks'][event].extend(hooks)
-        else:
-            existing['hooks'][event] = [existing['hooks'][event]] + hooks
+        # Check if claude-hook already exists to avoid duplicates
+        existing_str = str(existing['hooks'][event])
+        if 'claude-hook' not in existing_str:
+            if isinstance(existing['hooks'][event], list):
+                existing['hooks'][event].extend(hooks)
+            else:
+                existing['hooks'][event] = [existing['hooks'][event]] + hooks
 
 # Write back
 with open(os.path.expanduser('~/.claude/settings.json'), 'w') as f:
@@ -212,72 +179,19 @@ EOF
         cp "$REPO_DIR/.claude/settings-hook.json" ~/.claude/settings.json
     fi
 else
-    # Create basic settings file if config not found
-    echo -e "${YELLOW}⚠️ Config file not found, creating basic one...${NC}"
-    cat > ~/.claude/settings.json << 'EOF'
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/smart_controller.py session-start"
-          },
-          {
-            "type": "command", 
-            "command": "python3 ~/.claude/hooks/claude-hook/smart_context.py"
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/security_guard.py"
-          },
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/git_backup.py"  
-          },
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/analytics_tracker.py"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command", 
-            "command": "python3 ~/.claude/hooks/claude-hook/smart_controller.py post-tool"
-          },
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/perf_optimizer.py"
-          },
-          {
-            "type": "command",
-            "command": "python3 ~/.claude/hooks/claude-hook/doc_enforcer.py"
-          }
-        ]
-      }
-    ]
-  }
-}
-EOF
+    echo -e "${YELLOW}⚠️ Settings file not found in repo${NC}"
 fi
 
-# Enable features by default  
+# Enable features by default
 echo -e "${BLUE}🎯 Enabling default features...${NC}"
 touch ~/.claude/choices_enabled
 touch ~/.claude/tests_enabled
+
+# Clean up temp directory if used
+if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
+    echo -e "${BLUE}🧹 Cleaning up temporary files...${NC}"
+    rm -rf "$TEMP_DIR"
+fi
 
 # Test installation
 echo -e "${BLUE}🧪 Testing installation...${NC}"
@@ -287,11 +201,6 @@ else
     echo -e "${YELLOW}⚠️ Installation test had issues, but continuing...${NC}"
 fi
 
-# Cleanup temp directory if used
-if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
-    rm -rf "$TEMP_DIR"
-fi
-
 # Installation complete
 echo ""
 echo -e "${GREEN}🎉 Installation Complete!${NC}"
@@ -299,52 +208,25 @@ echo "=============================="
 echo ""
 echo -e "${BLUE}🎯 Available Commands:${NC}"
 echo "  ${YELLOW}/status${NC}           - Check current status"
-echo "  ${YELLOW}/enable-choices${NC}   - Turn on A/B/C options" 
+echo "  ${YELLOW}/enable-choices${NC}   - Turn on A/B/C options"
 echo "  ${YELLOW}/disable-choices${NC}  - Turn off A/B/C options"
 echo "  ${YELLOW}/enable-tests${NC}     - Turn on mandatory testing"
 echo "  ${YELLOW}/disable-tests${NC}    - Turn off mandatory testing"
 echo ""
-echo -e "${BLUE}🚀 Quick Start:${NC}"
-echo "  1. ${YELLOW}claude${NC}                 - Start Claude CLI"
-echo "  2. ${YELLOW}/status${NC}               - Check your superpowers"
-echo "  3. Ask a complex question and see A/B/C options!"
-echo ""
-echo -e "${BLUE}📊 Features Enabled by Default:${NC}"
+echo -e "${BLUE}📊 Features Enabled:${NC}"
 echo "  ✅ Multiple Choice System (A/B/C options)"
 echo "  ✅ Automatic Testing Enforcement"
 echo "  ✅ Security Guards"
-echo "  ✅ Performance Optimization"  
+echo "  ✅ Performance Optimization"
 echo "  ✅ Documentation Enforcement"
-echo "  ✅ Git Backup Suggestions"
-echo "  ✅ Usage Analytics"
+echo ""
+echo -e "${RED}⚠️  IMPORTANT: You must restart Claude CLI for changes to take effect!${NC}"
+echo -e "${YELLOW}    Please exit Claude and run 'claude' again.${NC}"
 echo ""
 echo -e "${PURPLE}🦸‍♀️ Your Claude CLI now has superpowers!${NC}"
-
-# Optional: Show quick demo
 echo ""
-read -p "Would you like to see a quick demo? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo -e "${BLUE}🎬 Quick Demo Preview:${NC}"
-    echo ""
-    echo -e "${YELLOW}User:${NC} 'How should I implement caching in this API?'"
-    echo ""
-    echo -e "${GREEN}Claude:${NC}"
-    echo "**Option A:** Simple in-memory cache (Redis/Memcached)"
-    echo "**Option B:** Multi-layer cache (memory + database + CDN)"  
-    echo "**Option C:** Advanced distributed cache with invalidation strategies"
-    echo ""
-    echo "Which approach fits your requirements? (A/B/C)"
-    echo ""
-    echo -e "${CYAN}[After implementation]${NC}"
-    echo -e "${BLUE}🧪 TESTS REQUIRED - Creating unit and integration tests...${NC}"
-    echo -e "${BLUE}🎨 AUTO-FORMATTING - Applying code style and linting...${NC}"
-    echo -e "${BLUE}📚 DOCS REQUIRED - Adding comprehensive documentation...${NC}"
-    echo -e "${GREEN}✅ All tests pass! Cache implementation is ready.${NC}"
-    echo ""
-    echo -e "${BLUE}✨ This automation happens after every code change!${NC}"
-fi
-
+echo -e "${CYAN}Quick test after restart:${NC}"
+echo "  1. Exit Claude (type 'exit' or Ctrl+C)"
+echo "  2. Run 'claude' again"
+echo "  3. Type '/status' to verify installation"
 echo ""
-echo -e "${GREEN}Ready to revolutionize your development workflow! 🚀${NC}"
-echo -e "${BLUE}Star the repo: ${CYAN}https://github.com/bacoco/claude-hook${NC}"

@@ -4,40 +4,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Master Claude Hook is a comprehensive automation system that enhances Claude Code with intelligent workflows and productivity features. This repository contains reusable hook scripts that can be copied to ANY project to add "superpowers" to Claude Code sessions.
+Master Claude Hook is a comprehensive automation system that enhances Claude Code with intelligent workflows and productivity features. This repository contains reusable hook scripts that can be installed globally to add "superpowers" to ALL Claude Code sessions.
 
-## Installation Commands
+**IMPORTANT**: Installation is global to `~/.claude/`, NOT to the current project directory.
 
-### Quick Install in Any Project
+## How to Install Claude Hook When User Requests It
+
+When a user says "Install Claude Hook from https://github.com/bacoco/claude-hook", use this approach:
+
+### Recommended Method: Temporary Clone
 ```bash
-# Clone and run installer
-git clone https://github.com/bacoco/claude-hook /tmp/claude-hook
-cd /tmp/claude-hook && ./install.sh
+# Clone to /tmp, install globally, then clean up
+git clone https://github.com/bacoco/claude-hook /tmp/claude-hook && \
+  /tmp/claude-hook/install.sh && \
+  rm -rf /tmp/claude-hook
+```
 
-# Or download and install directly
+### Alternative: Direct Download
+```bash
+# Download and run installer directly
 curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
 ```
 
-### Manual Installation for Custom Setup
-```bash
-# 1. Copy hook files to Claude's directory
-cp -r hooks/* ~/.claude/hooks/
+### CRITICAL: Tell User to Restart
+After installation completes, you MUST tell the user:
+"⚠️ **IMPORTANT**: You must restart Claude CLI for changes to take effect. Please exit Claude and run 'claude' again."
 
-# 2. Merge settings into Claude's configuration
-python3 -c "
-import json
-with open('config/settings.json') as f: new = json.load(f)
-with open('~/.claude/settings.json') as f: existing = json.load(f)
-# Merge logic here...
-"
+### What the Installation Does
 
-# 3. Copy command files
-cp -r commands/* ~/.claude/commands/
+The installer:
+1. **Downloads to temp** - Uses `/tmp/` directory, not user's project
+2. **Installs globally** - Everything goes to `~/.claude/`
+3. **Copies only essentials**:
+   - 8 hook scripts → `~/.claude/hooks/claude-hook/`
+   - 5 commands → `~/.claude/commands/`
+   - Settings merged → `~/.claude/settings.json`
+4. **Cleans up** - Removes all temporary files
+5. **Enables features** - A/B/C choices and test enforcement by default
 
-# 4. Enable desired features
-touch ~/.claude/choices_enabled  # Enable A/B/C choices
-touch ~/.claude/tests_enabled    # Enable test enforcement
-```
+**NO FILES** are left in the user's current directory.
 
 ## Feature Control Commands
 
@@ -50,9 +55,9 @@ touch ~/.claude/tests_enabled    # Enable test enforcement
 
 ### Direct Python Commands
 ```bash
-python3 ~/.claude/hooks/toggle_controls.py status
-python3 ~/.claude/hooks/toggle_controls.py enable-choices
-python3 ~/.claude/hooks/toggle_controls.py enable-tests
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
 ```
 
 ## Architecture

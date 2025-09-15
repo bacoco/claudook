@@ -39,18 +39,27 @@ Ensures all code is documented:
 
 ## 🚀 Quick Installation
 
-### Automatic Installation
+### Method 1: One-Line Installation (Recommended)
 ```bash
-# Clone and install
-git clone https://github.com/bacoco/claude-hook
-cd claude-hook && ./install.sh
+# Download and run installer directly (no clone needed)
+curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
 ```
 
-### Or use Claude to install
+### Method 2: Temporary Clone & Install
+```bash
+# Clone to temp directory, install, and clean up
+git clone https://github.com/bacoco/claude-hook /tmp/claude-hook && \
+  /tmp/claude-hook/install.sh && \
+  rm -rf /tmp/claude-hook
+```
+
+### Method 3: Let Claude Install It
 Simply tell Claude:
 ```
 Install Claude Hook from https://github.com/bacoco/claude-hook
 ```
+
+**⚠️ IMPORTANT:** After installation, you must **restart Claude CLI** for changes to take effect!
 
 ## 📋 Commands
 
@@ -78,23 +87,25 @@ claude-hook/
 
 ## ✅ Verify Installation
 
-After installation, verify everything works:
+After installation:
+
+1. **Restart Claude CLI** (exit and run `claude` again)
+2. Test with `/status` command
+3. Ask a complex question to see A/B/C choices in action
 
 ```bash
-# Run verification script
-./verify-installation.sh
-
-# Or test manually
+# After restart, in Claude CLI:
 /status
 ```
 
-## 🧪 Testing
+## 🧪 What Gets Installed
 
-Run the comprehensive test suite:
+Only the essential files are installed to `~/.claude/`:
+- **8 hook scripts** in `~/.claude/hooks/claude-hook/`
+- **5 commands** in `~/.claude/commands/`
+- **Settings merged** into `~/.claude/settings.json`
 
-```bash
-python3 tests/test_all_hooks.py
-```
+No documentation, tests, or other files are copied to your system.
 
 ## 📚 Documentation
 
