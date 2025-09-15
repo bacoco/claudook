@@ -52,11 +52,17 @@ your-project/
 
 Use these in Claude when working in your project:
 
+### Core Controls
 - `/status` - Check hook status
 - `/enable-choices` - Enable A/B/C options
 - `/disable-choices` - Disable A/B/C options
 - `/enable-tests` - Enable test enforcement
 - `/disable-tests` - Disable test enforcement
+
+### Parallel Execution (NEW)
+- `/enable-parallel` - Enable parallel task execution
+- `/disable-parallel` - Disable parallel task execution
+- `/task-status` - View current task execution status
 
 ## 🔧 Direct Control
 

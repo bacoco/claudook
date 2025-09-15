@@ -9,6 +9,7 @@ import sys
 # Control file paths
 CHOICES_FILE = os.path.expanduser("~/.claude/choices_enabled")
 TESTS_FILE = os.path.expanduser("~/.claude/tests_enabled")
+PARALLEL_FILE = os.path.expanduser("~/.claude/parallel_enabled")
 
 def enable_choices():
     """Enable the multiple choices system."""
@@ -45,15 +46,36 @@ def disable_tests():
     try:
         if os.path.exists(TESTS_FILE):
             os.remove(TESTS_FILE)
-        print("❌ Automatic testing DISABLED") 
+        print("❌ Automatic testing DISABLED")
         print("   Claude will not be forced to create tests")
     except IOError as e:
         print(f"❌ Failed to disable tests: {e}")
+
+def enable_parallel():
+    """Enable the parallel task execution system."""
+    try:
+        with open(PARALLEL_FILE, 'w') as f:
+            f.write("enabled\n")
+        print("✅ Parallel task execution ENABLED")
+        print("   Claude will decompose complex tasks and execute them in parallel")
+    except IOError as e:
+        print(f"❌ Failed to enable parallel execution: {e}")
+
+def disable_parallel():
+    """Disable the parallel task execution system."""
+    try:
+        if os.path.exists(PARALLEL_FILE):
+            os.remove(PARALLEL_FILE)
+        print("❌ Parallel task execution DISABLED")
+        print("   Claude will execute tasks sequentially")
+    except IOError as e:
+        print(f"❌ Failed to disable parallel execution: {e}")
 
 def show_status():
     """Show current status of all features."""
     choices_status = "🟢 ON" if os.path.exists(CHOICES_FILE) else "🔴 OFF"
     tests_status = "🟢 ON" if os.path.exists(TESTS_FILE) else "🔴 OFF"
+    parallel_status = "🟢 ON" if os.path.exists(PARALLEL_FILE) else "🔴 OFF"
     
     print(f"""
 🚀 CLAUDOOK STATUS
@@ -62,19 +84,24 @@ def show_status():
 📊 Feature Status:
   🎯 Multiple Choice System: {choices_status}
   🧪 Automatic Testing:      {tests_status}
+  🚀 Parallel Task Execution: {parallel_status}
 
 💡 Control Commands:
   /enable-choices   - Turn on A/B/C option system
   /disable-choices  - Turn off A/B/C option system
   /enable-tests     - Turn on mandatory testing
   /disable-tests    - Turn off mandatory testing
+  /enable-parallel  - Turn on parallel task execution
+  /disable-parallel - Turn off parallel task execution
   /status          - Show this status
 
 🎛️ Quick Toggle:
   python3 ~/.claude/hooks/claudook/toggle_controls.py enable-choices
   python3 ~/.claude/hooks/claudook/toggle_controls.py enable-tests
-  python3 ~/.claude/hooks/claudook/toggle_controls.py disable-tests
+  python3 ~/.claude/hooks/claudook/toggle_controls.py enable-parallel
   python3 ~/.claude/hooks/claudook/toggle_controls.py disable-choices
+  python3 ~/.claude/hooks/claudook/toggle_controls.py disable-tests
+  python3 ~/.claude/hooks/claudook/toggle_controls.py disable-parallel
 
 📚 Features Overview:
 
@@ -85,6 +112,11 @@ def show_status():
 🧪 Automatic Testing:
    When enabled, Claude is blocked after code changes until it creates
    comprehensive tests and ensures they pass. No exceptions.
+
+🚀 Parallel Task Execution:
+   When enabled, Claude automatically decomposes complex requests into
+   subtasks, analyzes dependencies, and executes independent tasks in
+   parallel using specialized agents.
 
 🔍 Other Active Features:
    ✅ Security Guard (always active)
@@ -152,6 +184,10 @@ def main():
         enable_tests()
     elif command in ["disable-tests", "disable_tests"]:
         disable_tests()
+    elif command in ["enable-parallel", "enable_parallel"]:
+        enable_parallel()
+    elif command in ["disable-parallel", "disable_parallel"]:
+        disable_parallel()
     elif command == "status":
         show_status()
     elif command in ["help", "--help", "-h"]:
