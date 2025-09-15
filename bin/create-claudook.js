@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import path, { dirname, join } from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 const { blue, green, red, yellow, cyan } = chalk;
