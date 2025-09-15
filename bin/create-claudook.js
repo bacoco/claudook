@@ -233,9 +233,13 @@ async function setupPackageJson(installDir) {
     pkg = {
       name: "claudook-project",
       version: "1.0.0",
+      type: "module",
       private: true
     };
   }
+
+  // Ensure ES module support
+  pkg.type = "module";
 
   // Add Claudook dependencies
   pkg.dependencies = pkg.dependencies || {};
