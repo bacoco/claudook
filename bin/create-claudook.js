@@ -250,7 +250,7 @@ async function main() {
     console.log(chalk.cyan('This is a LOCAL installation:'));
     console.log(`  • Files are in ${chalk.yellow(join(installDir, '.claude'))}`);
     console.log('  • Settings are project-specific');
-    console.log('  • Works immediately (no restart needed)\n');
+    console.log('  • Restart Claude (/exit then claude) to activate slash commands\n');
 
     // Check if package.json exists and has dependencies
     const packageJsonPath = join(installDir, 'package.json');

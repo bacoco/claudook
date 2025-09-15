@@ -177,7 +177,7 @@ create-claudook
 npm install
 ```
 
-**That's it!** No configuration needed. Works immediately.
+**That's it!** No configuration needed. Restart Claude (`/exit` then `claude`) to activate slash commands.
 
 ### What You'll See After Installation
 
