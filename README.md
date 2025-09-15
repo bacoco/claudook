@@ -206,12 +206,41 @@ Once installed, all commands are organized under the `/claudook/` namespace:
 ### Full Command List
 - **Core**: `/claudook/help`, `/claudook/status`, `/claudook/version`
 - **Features**: `/claudook/choices-enable`, `/claudook/tests-enable`, `/claudook/parallel-enable`
-- **Analysis**: `/claudook/security-check`, `/claudook/performance-check`, `/claudook/lint`
+- **Security**: `/claudook/security-enable`, `/claudook/security-disable`, `/claudook/security-check`
+- **Analysis**: `/claudook/performance-check`, `/claudook/lint`
 - **Config**: `/claudook/config-show`, `/claudook/config-reset`, `/claudook/update`
+
+## 🔒 Security Features (Opt-In)
+
+**By default, Claudook runs in minimal mode** to avoid blocking legitimate commands.
+
+Advanced security features are **opt-in** because they can:
+- Block commands in subdirectories
+- Interfere with complex workflows
+- Add overhead to every operation
+- Cause false positives
+
+### Enable Advanced Security
+```bash
+/claudook/security-enable
+```
+
+This activates:
+- **Security Guard**: Blocks dangerous commands
+- **Performance Optimizer**: Auto-optimizes code
+- **Documentation Enforcer**: Ensures docs are updated
+- **Git Backup**: Suggests backups before risky operations
+
+### Disable If Needed
+```bash
+/claudook/security-disable
+```
+
+Returns to minimal, non-blocking mode.
 
 ### 🚨 Emergency Hook Control
 
-If hooks are blocking your work (like the perf_optimizer or doc_enforcer):
+If you need to disable ALL hooks immediately:
 
 ```bash
 # Disable ALL hooks immediately (including safeguards)

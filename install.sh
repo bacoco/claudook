@@ -143,7 +143,7 @@ if [ -f "$INSTALL_DIR/.claude/settings.json" ]; then
     echo -e "${GREEN}✅ Backup created${NC}"
 fi
 
-# Copy settings file
+# Copy settings file (use minimal by default)
 if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
     echo -e "${BLUE}📝 Creating local settings file...${NC}"
 
@@ -276,9 +276,12 @@ echo ""
 echo -e "${BLUE}📊 Features Enabled:${NC}"
 echo "  ✅ Multiple Choice System (A/B/C options)"
 echo "  ✅ Automatic Testing Enforcement"
-echo "  ✅ Security Guards"
-echo "  ✅ Performance Optimization"
-echo "  ✅ Documentation Enforcement"
+echo "  ✅ Session Context Display"
+echo ""
+echo -e "${BLUE}🔒 Security Features (Opt-in):${NC}"
+echo "  ⚪ Security Guards (use /claudook/security-enable)"
+echo "  ⚪ Performance Optimization (use /claudook/security-enable)"
+echo "  ⚪ Documentation Enforcement (use /claudook/security-enable)"
 echo ""
 echo -e "${GREEN}✨ Claudook is now active for this project!${NC}"
 echo ""

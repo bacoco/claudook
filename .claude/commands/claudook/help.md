@@ -21,6 +21,8 @@ Use `/claudook/help` to see this comprehensive list of all Claudook features and
 - `/claudook/parallel-disable` - Disable parallel task execution
 
 ### Security & Quality
+- `/claudook/security-enable` - Enable advanced security features (opt-in)
+- `/claudook/security-disable` - Disable advanced security features
 - `/claudook/security-check` - Run security analysis on current code
 - `/claudook/performance-check` - Analyze performance bottlenecks
 - `/claudook/lint` - Run linting and code quality checks
