@@ -130,7 +130,8 @@ elif [ -d "$REPO_DIR/.claude/commands" ]; then
     # Try old structure as fallback
     cp "$REPO_DIR"/.claude/commands/*.md "$INSTALL_DIR/.claude/commands/" 2>/dev/null || {
         echo -e "${YELLOW}⚠️ Commands not found, creating basic ones...${NC}"
-}
+    }
+fi
 
 # Create local settings file
 echo -e "${BLUE}⚙️ Creating local settings configuration...${NC}"
