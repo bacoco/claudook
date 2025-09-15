@@ -15,7 +15,9 @@
     "test:coverage": "jest --coverage",
     "lint": "eslint .claude/hooks/claudook/*.js --fix",
     "format": "prettier --write .claude/hooks/claudook/*.js",
-    "validate": "npm run format && npm run lint && npm run test"
+    "validate": "npm run format && npm run lint && npm run test",
+    "claudook:test": "node .claude/hooks/claudook/security_guard.js test",
+    "claudook:status": "node .claude/hooks/claudook/analytics_tracker.js status"
   },
   "keywords": [
     "claude",

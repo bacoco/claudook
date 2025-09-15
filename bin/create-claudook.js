@@ -269,8 +269,9 @@ async function createFeatureFlags(installDir) {
 
   await fs.ensureFile(join(claudeDir, 'choices_enabled'));
   await fs.ensureFile(join(claudeDir, 'tests_enabled'));
+  await fs.ensureFile(join(claudeDir, 'parallel_enabled'));
 
-  console.log(chalk.green('✅ Feature flags enabled'));
+  console.log(chalk.green('✅ Feature flags enabled (choices, tests, parallel)'));
 }
 
 async function createClaudeMd(installDir) {

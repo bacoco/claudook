@@ -66,7 +66,7 @@ I'll break this down into parallel tasks:
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions
 - 🟢 **Automatic Testing**: ON - Tests are mandatory after code changes
-- 🟢 **Parallel Task Execution**: ON - Complex tasks run in parallel
+- 🟢 **Parallel Task Execution**: ON - Complex tasks run in parallel (always enabled)
 - ✅ **Task Orchestration**: Always active - Breaks down complex tasks
 - ✅ **Agent Spawning**: Always active - Creates specialized agents
 - ✅ **Security Guard**: Always active - Blocks dangerous commands
