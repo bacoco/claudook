@@ -1,460 +1,310 @@
-# Troubleshooting Guide
+# Claude Hook Troubleshooting Guide
 
-Solutions for common Claude Hook issues and problems.
+## Common Issues and Solutions
 
-## Installation Issues
+### Installation Issues
 
-### Claude CLI Not Found
-
-**Error**: `❌ Claude CLI not found`
+#### 1. "Claude CLI not found" Error
+**Problem**: Installation script can't find Claude CLI.
 
 **Solution**:
 ```bash
-# Install Claude CLI
+# Install Claude CLI first
 npm install -g @anthropic-ai/claude-code
 
-# Verify installation
-claude --version
+# Then retry installation
+./install.sh
 ```
 
-**Alternative**: Use the native installer:
-```bash
-curl -fsSL https://claude.ai/install.sh | bash
-```
+#### 2. "Python 3 required but not found"
+**Problem**: Python 3 is not installed or not in PATH.
 
-### Python Not Found
-
-**Error**: `❌ Python 3 required but not found`
-
-**Solutions**:
+**Solution**:
 ```bash
 # macOS
 brew install python3
 
-# Ubuntu/Debian  
-sudo apt update && sudo apt install python3
+# Ubuntu/Debian
+sudo apt-get install python3
 
-# Windows (use WSL or install Python directly)
-python --version  # Should be 3.6+
+# Verify installation
+python3 --version
 ```
 
-### Permission Denied
-
-**Error**: `Permission denied: ~/.claude/hooks/script.py`
+#### 3. Installation Completes but Hooks Don't Work
+**Problem**: Hooks are installed but not triggering in Claude.
 
 **Solution**:
-```bash
-# Fix permissions
-chmod +x ~/.claude/hooks/*.py
-
-# Or re-run installation
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
-```
-
-## Hook Execution Issues
-
-### Hooks Not Running
-
-**Symptoms**: No hook effects visible in Claude CLI
-
-**Debug Steps**:
-
-1. **Check hook configuration**:
+1. Run verification script:
    ```bash
-   # In Claude CLI
-   /hooks
-   # Should show your installed hooks
+   ./verify-installation.sh
    ```
 
-2. **Verify settings.json**:
+2. Check settings.json was updated:
    ```bash
-   cat ~/.claude/settings.json
-   # Should contain hook definitions
+   grep "claude-hook" ~/.claude/settings.json
    ```
 
-3. **Test hooks manually**:
+3. If missing, manually merge settings:
    ```bash
-   python3 ~/.claude/hooks/smart_controller.py session-start
-   # Should output JSON
+   python3 << EOF
+   import json
+   with open('.claude/settings-hook.json') as f:
+       hooks = json.load(f)
+   with open('~/.claude/settings.json') as f:
+       settings = json.load(f)
+   settings['hooks'].update(hooks['hooks'])
+   with open('~/.claude/settings.json', 'w') as f:
+       json.dump(settings, f, indent=2)
+   EOF
    ```
 
-4. **Check file permissions**:
-   ```bash
-   ls -la ~/.claude/hooks/
-   # All .py files should be executable (+x)
-   ```
+### Feature Not Working
 
-### Hook Syntax Errors
-
-**Error**: `SyntaxError` or `ImportError` in hook scripts
-
-**Solution**:
-```bash
-# Test Python syntax
-python3 -m py_compile ~/.claude/hooks/smart_controller.py
-
-# Check for missing modules
-python3 -c "import json, sys, os"
-```
-
-### JSON Parse Errors
-
-**Error**: `JSONDecodeError` in hook output
-
-**Debug**:
-```bash
-# Test hook output
-echo '{"tool_name":"Edit","tool_input":{"file_path":"test.py"}}' | \
-python3 ~/.claude/hooks/smart_controller.py post-tool
-```
-
-**Fix**: Ensure hooks always output valid JSON:
-```python
-# Always wrap output in try/catch
-try:
-    output = {"key": "value"}
-    print(json.dumps(output))
-except Exception:
-    print("{}")  # Empty JSON as fallback
-```
-
-## Feature Issues
-
-### Multiple Choices Not Working
+#### 1. A/B/C Choices Not Appearing
+**Problem**: Complex questions don't trigger multiple choice options.
 
 **Check**:
 ```bash
-# Verify choices are enabled
+# Verify feature is enabled
 ls ~/.claude/choices_enabled
-# File should exist
 
-# Test status
-python3 ~/.claude/hooks/toggle_controls.py status
+# If missing, enable it
+touch ~/.claude/choices_enabled
+
+# Test with Claude
+/status
 ```
 
-**Fix**:
-```bash
-# Re-enable choices
-/enable-choices
-# or
-python3 ~/.claude/hooks/toggle_controls.py enable-choices
-```
+**Test Question**: "How should I implement user authentication?"
 
-### Tests Not Being Enforced
+#### 2. Test Enforcement Not Blocking
+**Problem**: Code changes don't trigger mandatory testing.
 
 **Check**:
 ```bash
-# Verify tests are enabled
+# Verify feature is enabled
 ls ~/.claude/tests_enabled
-# File should exist
 
-# Check PostToolUse hooks
-grep -A 10 "PostToolUse" ~/.claude/settings.json
+# If missing, enable it
+touch ~/.claude/tests_enabled
+
+# Check hook is registered
+grep "smart_controller.py post-tool" ~/.claude/settings.json
+```
+
+#### 3. Security Guard Not Blocking Dangerous Commands
+**Problem**: Dangerous commands like `rm -rf /` aren't blocked.
+
+**Test**:
+```bash
+echo '{"tool_name": "Bash", "tool_input": {"command": "rm -rf /"}}' | \
+  python3 ~/.claude/hooks/claude-hook/security_guard.py
+
+# Should output blocking message with non-zero exit code
 ```
 
 **Fix**:
 ```bash
-# Re-enable tests
-/enable-tests
+# Ensure security guard is in PreToolUse hooks
+grep "security_guard" ~/.claude/settings.json
 
-# Check hook matcher
-# Should include "Edit|Write|MultiEdit"
+# Check file permissions
+chmod +x ~/.claude/hooks/claude-hook/security_guard.py
 ```
 
-### Security Guard Too Strict
+### Command Issues
 
-**Issue**: Legitimate commands being blocked
-
-**Solutions**:
-
-1. **Temporary override**:
-   ```bash
-   # Add override flag (modify security_guard.py)
-   export CLAUDE_SECURITY_OVERRIDE=true
-   ```
-
-2. **Customize patterns**:
-   ```python
-   # In security_guard.py, modify dangerous_patterns
-   dangerous_patterns = [
-       # Comment out overly strict patterns
-       # (r'your-pattern', "description"),
-   ]
-   ```
-
-3. **Whitelist approach**:
-   ```python
-   # Add safe command whitelist
-   safe_commands = ['your-safe-command', 'another-command']
-   if any(cmd in command for cmd in safe_commands):
-       sys.exit(0)  # Allow command
-   ```
-
-### Performance Optimizer Conflicts
-
-**Issue**: Conflicts with existing formatters
-
-**Solution**:
-```python
-# In perf_optimizer.py, customize for your setup
-tools_map = {
-    '.py': {
-        'formatter': 'your-preferred-formatter',
-        'linter': 'your-preferred-linter',
-    }
-}
-```
-
-## Claude CLI Integration Issues
-
-### Hooks Menu Empty
-
-**Problem**: `/hooks` command shows no hooks
+#### 1. "/status command not found"
+**Problem**: Slash commands not recognized in Claude CLI.
 
 **Solution**:
 ```bash
-# Check if settings.json exists and is valid
-python3 -c "import json; print(json.load(open('$HOME/.claude/settings.json')))"
-
-# Re-run installation
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
-```
-
-### Settings Not Persisting
-
-**Problem**: Hook settings reset after restart
-
-**Check**:
-```bash
-# Verify settings location
-ls -la ~/.claude/settings.json
-
-# Check for backup files
-ls ~/.claude/settings.json.backup.*
-```
-
-**Fix**:
-```bash
-# Restore from backup if needed
-cp ~/.claude/settings.json.backup.TIMESTAMP ~/.claude/settings.json
-
-# Re-run installation
-./install.sh
-```
-
-### Slash Commands Not Working
-
-**Problem**: `/status`, `/enable-choices` etc. not recognized
-
-**Solution**:
-```bash
-# Check commands directory
+# Check command files exist
 ls ~/.claude/commands/
 
-# Should contain: enable-choices.md, disable-choices.md, etc.
+# If missing, copy them
+cp -r .claude/commands/* ~/.claude/commands/
 
-# Re-install commands
-cp commands/*.md ~/.claude/commands/
+# Restart Claude CLI
 ```
 
-## Performance Issues
-
-### Hooks Running Slowly
-
-**Symptoms**: Noticeable delay in Claude CLI responses
-
-**Solutions**:
-
-1. **Disable heavy analytics**:
-   ```python
-   # In analytics_tracker.py
-   if os.environ.get('CLAUDE_FAST_MODE'):
-       sys.exit(0)  # Skip analytics
-   ```
-
-2. **Optimize hook scripts**:
-   ```python
-   # Add early exits
-   if not should_process_this_file(file_path):
-       sys.exit(0)
-   ```
-
-3. **Reduce git operations**:
-   ```python
-   # In git_backup.py, cache git status
-   _git_status_cache = None
-   ```
-
-### High Memory Usage
-
-**Solution**:
-```python
-# In analytics_tracker.py
-def cleanup_old_files():
-    # Reduce retention period
-    cutoff_date = date.today() - timedelta(days=7)  # Reduced from 30
-```
-
-## Git Integration Issues
-
-### Git Commands Failing
-
-**Error**: Git operations in `git_backup.py` failing
-
-**Debug**:
-```bash
-# Test git in current directory
-git status
-git branch --show-current
-
-# Check git configuration
-git config --list
-```
-
-**Fix**:
-```python
-# In git_backup.py, add better error handling
-def run_git_command(command):
-    try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=5)
-        return result.stdout.strip() if result.returncode == 0 else None
-    except:
-        return None
-```
-
-### Backup Suggestions Not Appearing
+#### 2. Commands Run but Don't Work
+**Problem**: Commands execute but don't change settings.
 
 **Check**:
 ```bash
-# Verify you're in a git repository
-git rev-parse --git-dir
+# Test directly
+python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
 
-# Check if backup suggestions are printed
-python3 ~/.claude/hooks/git_backup.py < test_data.json
+# Check control file was created
+ls ~/.claude/choices_enabled
 ```
 
-## Analytics Issues
+### Hook Errors
 
-### Analytics Files Growing Too Large
+#### 1. "Permission denied" When Running Hooks
+**Problem**: Hook scripts aren't executable.
 
 **Solution**:
 ```bash
-# Clear old analytics
-rm ~/.claude/analytics/daily_*.json
-rm ~/.claude/analytics/events.jsonl
-
-# Or configure cleanup
-export CLAUDE_ANALYTICS_RETENTION_DAYS=7
+chmod +x ~/.claude/hooks/claude-hook/*.py
 ```
 
-### Analytics Directory Permissions
+#### 2. JSON Output Errors
+**Problem**: Hooks fail with JSON parsing errors.
 
-**Error**: Cannot write to analytics directory
-
-**Fix**:
+**Test**:
 ```bash
-# Fix permissions
-chmod 755 ~/.claude/analytics
-chmod 644 ~/.claude/analytics/*
+# Test hook output
+python3 ~/.claude/hooks/claude-hook/smart_controller.py session-start | python3 -m json.tool
+
+# Should show valid JSON with hookSpecificOutput key
 ```
 
-## Environment-Specific Issues
+#### 3. Hook Timeout Issues
+**Problem**: Hooks take too long and timeout.
 
-### Windows/WSL Issues
+**Check**:
+- Ensure hooks don't have infinite loops
+- Check network-dependent hooks have timeouts
+- Verify Python dependencies are installed
 
-**Common problems**:
-- Path separators (`\` vs `/`)
-- Line ending differences (CRLF vs LF)
-- Permission model differences
+### Performance Issues
 
-**Solutions**:
+#### 1. Claude CLI Slow After Installation
+**Problem**: Hooks causing performance degradation.
+
+**Temporary Fix**:
 ```bash
-# Convert line endings
-dos2unix ~/.claude/hooks/*.py
+# Disable non-critical features
+/disable-tests
+/disable-choices
 
-# Fix paths in hooks
-sed -i 's/\\/\//g' ~/.claude/hooks/*.py
+# Or temporarily rename settings
+mv ~/.claude/settings.json ~/.claude/settings.json.backup
 ```
 
-### macOS Permissions
+#### 2. High CPU Usage
+**Problem**: Hooks consuming excessive resources.
 
-**Error**: macOS blocking hook execution
-
-**Solution**:
+**Debug**:
 ```bash
-# Allow execution
-xattr -dr com.apple.quarantine ~/.claude/hooks/
+# Monitor hook execution
+time python3 ~/.claude/hooks/claude-hook/analytics_tracker.py
 
-# Or re-download and install
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
+# Check for runaway processes
+ps aux | grep python | grep claude-hook
 ```
 
-## Debug Mode
+### Complete Reset
 
-### Enable Debug Output
-
-Add to your shell configuration:
-```bash
-export CLAUDE_HOOK_DEBUG=true
-export CLAUDE_HOOK_VERBOSE=true
-```
-
-### Manual Hook Testing
+If all else fails, perform a complete reinstall:
 
 ```bash
-# Test session start
-python3 ~/.claude/hooks/smart_controller.py session-start
+# 1. Backup current settings
+cp ~/.claude/settings.json ~/.claude/settings.json.backup.$(date +%s)
 
-# Test post tool use
-echo '{"tool_name":"Edit","tool_input":{"file_path":"test.py","content":"print(hello)"}}' | \
-python3 ~/.claude/hooks/smart_controller.py post-tool
+# 2. Remove all Claude Hook files
+rm -rf ~/.claude/hooks/claude-hook/
+rm ~/.claude/choices_enabled ~/.claude/tests_enabled
+rm ~/.claude/commands/{status,enable-*,disable-*}.md
 
-# Test security guard
-echo '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}' | \
-python3 ~/.claude/hooks/security_guard.py
-```
+# 3. Clean settings.json (remove claude-hook references)
+python3 << EOF
+import json
+with open('~/.claude/settings.json') as f:
+    settings = json.load(f)
+# Remove claude-hook hooks
+for event in settings.get('hooks', {}):
+    settings['hooks'][event] = [
+        h for h in settings['hooks'][event]
+        if 'claude-hook' not in str(h)
+    ]
+with open('~/.claude/settings.json', 'w') as f:
+    json.dump(settings, f, indent=2)
+EOF
 
-### Hook Output Inspection
+# 4. Reinstall fresh
+./install.sh
 
-```bash
-# Capture hook output
-echo '{"tool_name":"Edit","tool_input":{"file_path":"test.py"}}' | \
-python3 ~/.claude/hooks/doc_enforcer.py 2>&1 | tee hook_output.log
+# 5. Verify
+./verify-installation.sh
 ```
 
 ## Getting Help
 
-If you're still having issues:
+### Debug Information to Collect
 
-1. **Check GitHub Issues**: [github.com/bacoco/claude-hook/issues](https://github.com/bacoco/claude-hook/issues)
+When reporting issues, include:
 
-2. **Create a Bug Report** with:
-   - Your operating system
-   - Claude CLI version (`claude --version`)
-   - Python version (`python3 --version`)
-   - Hook output/error messages
-   - Steps to reproduce
-
-3. **Join Discussions**: Share your issue in GitHub Discussions
-
-4. **Emergency Reset**:
+1. **System Info**:
    ```bash
-   # Complete reset
-   mv ~/.claude ~/.claude.backup
-   curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
+   uname -a
+   python3 --version
+   claude --version
    ```
 
-## Common Error Messages
+2. **Installation Status**:
+   ```bash
+   ./verify-installation.sh
+   ```
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `FileNotFoundError: python3` | Python not installed | Install Python 3.6+ |
-| `JSONDecodeError` | Invalid JSON in hook | Check hook script syntax |
-| `PermissionError` | File permissions | `chmod +x ~/.claude/hooks/*.py` |
-| `ModuleNotFoundError` | Missing Python modules | Use system Python, not venv |
-| `Hook timeout` | Hook taking too long | Add timeout handling |
-| `Settings not found` | Missing configuration | Re-run `install.sh` |
+3. **Hook Test Results**:
+   ```bash
+   python3 tests/test_all_hooks.py
+   ```
 
----
+4. **Settings Snapshot**:
+   ```bash
+   grep -A5 -B5 "claude-hook" ~/.claude/settings.json
+   ```
 
-**Still stuck?** Open an issue on GitHub with details! 🚀
+### Support Channels
+
+- **GitHub Issues**: https://github.com/bacoco/claude-hook/issues
+- **Documentation**: Check `docs/` directory
+- **Quick Test**: Run `./verify-installation.sh` first
+
+## Prevention Tips
+
+1. **Always verify after installation**:
+   ```bash
+   ./verify-installation.sh
+   ```
+
+2. **Test features individually**:
+   ```bash
+   /status
+   /enable-choices
+   # Test with a complex question
+   /disable-choices
+   ```
+
+3. **Keep backups**:
+   ```bash
+   cp ~/.claude/settings.json ~/.claude/settings.json.backup
+   ```
+
+4. **Update regularly**:
+   ```bash
+   git pull origin main
+   ./install.sh
+   ```
+
+## FAQ
+
+**Q: Can I use Claude Hook with other Claude extensions?**
+A: Yes, the `claude-hook` namespace prevents conflicts.
+
+**Q: Will uninstalling break my Claude CLI?**
+A: No, it only removes the hook additions.
+
+**Q: Can I customize which features are enabled by default?**
+A: Yes, modify the install.sh script before running.
+
+**Q: Do hooks work with all Claude models?**
+A: Yes, hooks work at the CLI level, not model level.
+
+**Q: Can I add my own custom hooks?**
+A: Yes, add them to `.claude/hooks/claude-hook/` and register in settings.
