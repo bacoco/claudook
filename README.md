@@ -471,7 +471,8 @@ No system files touched. Complete removal.
 
 **Install with one command!** Claudook is now available as an npm package.
 
-### What's New in v2.1
+### What's New in v2.2
+- ✅ **Auto-approval for Claudook commands** - No more validation prompts!
 - ✅ **NPX installation** - `npx create-claudook`
 - ✅ **Pure JavaScript hooks** - No external dependencies
 - ✅ **ES modules** - Modern JavaScript with import/export
@@ -543,7 +544,7 @@ Then ask Claude to build something complex and watch the magic happen.
 ## 📦 npm Package
 
 - **Package**: [create-claudook](https://www.npmjs.com/package/create-claudook)
-- **Version**: 2.1.0
+- **Version**: 2.2.0
 - **License**: MIT
 
 ---
