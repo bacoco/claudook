@@ -113,6 +113,9 @@ async function createSettings(installDir) {
     console.log(chalk.yellow(`💾 Backed up existing settings to ${backupPath}`));
   }
 
+  // Use absolute path since CLAUDE_PROJECT_DIR doesn't work
+  const absolutePath = path.resolve(installDir);
+
   const settings = {
     hooks: {
       PreToolUse: [
@@ -121,23 +124,23 @@ async function createSettings(installDir) {
           hooks: [
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/analytics_tracker.js"
+              command: `node ${absolutePath}/.claude/hooks/claudook/analytics_tracker.js`
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/smart_context.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/smart_context.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/smart_controller.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/smart_controller.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/multiple_choice.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/multiple_choice.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/test_enforcer.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/test_enforcer.js"
             }
           ]
         },
@@ -146,7 +149,7 @@ async function createSettings(installDir) {
           hooks: [
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/security_guard.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/security_guard.js"
             }
           ]
         },
@@ -155,15 +158,15 @@ async function createSettings(installDir) {
           hooks: [
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/git_backup.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/git_backup.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/doc_enforcer.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/doc_enforcer.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/perf_optimizer.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/perf_optimizer.js"
             }
           ]
         },
@@ -172,15 +175,15 @@ async function createSettings(installDir) {
           hooks: [
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/task_orchestrator.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/task_orchestrator.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/task_analyzer.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/task_analyzer.js"
             },
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/dependency_analyzer.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/dependency_analyzer.js"
             }
           ]
         },
@@ -189,7 +192,7 @@ async function createSettings(installDir) {
           hooks: [
             {
               type: "command",
-              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/agent_spawner.js"
+              command: "node ${absolutePath}/.claude/hooks/claudook/agent_spawner.js"
             }
           ]
         }
@@ -208,7 +211,7 @@ async function createSettings(installDir) {
       "npx create-claudook@*",
       "echo * | npx create-claudook*",
       "node .claude/hooks/claudook/*",
-      "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/*",
+      "node ${absolutePath}/.claude/hooks/claudook/*",
       ".claude/hooks/claudook/*",
       "npm run claudook*",
       "npm test",
