@@ -6,6 +6,7 @@ Automatically injects relevant project context at session start.
 import json
 import os
 import subprocess
+import sys
 
 from pathlib import Path
 
@@ -192,29 +193,33 @@ def get_environment_context():
 def get_smart_context():
     """Generate comprehensive project context."""
     all_context = []
-    
-    # Git context
+
+    # Git context (most important, show first)
     git_ctx = get_git_context()
-    all_context.extend(git_ctx)
-    
-    # Project type contexts
+    if git_ctx:
+        all_context.extend(git_ctx[:2])  # Show only branch and changes
+
+    # Project type contexts (show only the main one)
     node_ctx = get_node_context()
-    all_context.extend(node_ctx)
-    
+    if node_ctx:
+        all_context.append(node_ctx[0])  # Just project name/version
+
     python_ctx = get_python_context()
-    all_context.extend(python_ctx)
-    
-    other_ctx = get_other_contexts()
-    all_context.extend(other_ctx)
-    
-    # Environment context
+    if python_ctx and not node_ctx:  # Only show if not a Node project
+        all_context.append(python_ctx[0])
+
+    # Environment context (only critical items)
     env_ctx = get_environment_context()
-    all_context.extend(env_ctx)
-    
+    for item in env_ctx:
+        if "Error logs" in item or "⚠️" in item:
+            all_context.append(item)  # Only show warnings
+
     if all_context:
-        return "AUTO PROJECT CONTEXT:\n" + "\n".join(all_context)
+        # Keep it to max 3-4 lines
+        context_lines = all_context[:4]
+        return "📍 " + " • ".join(context_lines)
     else:
-        return "AUTO PROJECT CONTEXT:\n📁 Basic project directory"
+        return "📍 Project: " + os.path.basename(os.getcwd())
 
 def main():
     """Main entry point."""

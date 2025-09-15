@@ -44,43 +44,36 @@ def is_enabled(control_file):
 
 def get_session_context():
     """Generate session context based on enabled features."""
-    context_parts = []
-    
-    # 1. Multiple Choice System
-    if is_enabled(CHOICES_CONTROL):
-        context_parts.append("""
-🎯 MULTIPLE CHOICE MODE ACTIVE:
-When my question could have multiple valid approaches, systematically propose:
-• **Option A:** [quick/simple solution]
-• **Option B:** [balanced approach] 
-• **Option C:** [advanced/complete solution]
+    # Check enabled features
+    choices_enabled = is_enabled(CHOICES_CONTROL)
+    tests_enabled = is_enabled(TESTS_CONTROL)
 
-Then wait for my selection (A/B/C) before developing.
-If obvious answer exists, respond directly.
-        """.strip())
-    
-    # 2. Automatic Testing System
-    if is_enabled(TESTS_CONTROL):
-        context_parts.append("""
-🧪 AUTOMATIC TESTING ACTIVE:
-After EVERY code modification, you MUST automatically:
-1. Create appropriate unit tests
-2. Execute them immediately
-3. Fix and iterate until they pass
-No exceptions - tests are mandatory for all code.
-        """.strip())
-    
-    # 3. Available Controls
-    context_parts.append("""
-📋 AVAILABLE CONTROLS:
-- /enable-choices : Activate multiple choice system
-- /disable-choices : Deactivate multiple choice system
-- /enable-tests : Activate automatic testing
-- /disable-tests : Deactivate automatic testing
-- /status : Check current hook status
-    """.strip())
-    
-    return "\n\n".join(context_parts)
+    # Build status line
+    features = []
+    if choices_enabled:
+        features.append("A/B/C")
+    if tests_enabled:
+        features.append("Tests")
+
+    if features:
+        status_line = f"🚀 Claudook [{' + '.join(features)}] • /claudook/help"
+    else:
+        status_line = "🚀 Claudook Ready • /claudook/help to start"
+
+    # Only show detailed instructions if features are enabled
+    instructions = []
+
+    if choices_enabled:
+        instructions.append("📌 Will offer A/B/C options for complex tasks")
+
+    if tests_enabled:
+        instructions.append("📌 Will auto-create tests after code changes")
+
+    # Combine everything concisely
+    if instructions:
+        return status_line + "\n" + "\n".join(instructions)
+    else:
+        return status_line
 
 def handle_post_tool_use():
     """Handle PostToolUse hook for test enforcement."""
