@@ -129,12 +129,19 @@ echo "$CLAUDOOK_DIRS" | while read -r dir; do
     rm -rf "$dir"
     echo "  ✓ Removed hooks/claudook/"
 
-    # Remove settings.json if it contains claudook
+    # Handle settings.json carefully
     SETTINGS_FILE="$PROJECT_DIR/.claude/settings.json"
     if [ -f "$SETTINGS_FILE" ]; then
         if grep -q "claudook" "$SETTINGS_FILE" 2>/dev/null; then
-            rm -f "$SETTINGS_FILE"
-            echo "  ✓ Removed settings.json"
+            # Check if settings.json has ONLY claudook content
+            if [ $(grep -v "claudook" "$SETTINGS_FILE" | grep -c '"hooks"') -eq 0 ]; then
+                rm -f "$SETTINGS_FILE"
+                echo "  ✓ Removed settings.json (contained only Claudook)"
+            else
+                # Remove only claudook entries from settings.json
+                echo "  ⚠️  settings.json contains other hooks - manual cleanup needed"
+                echo "     To clean manually: edit $SETTINGS_FILE and remove claudook references"
+            fi
         fi
     fi
 
@@ -172,11 +179,15 @@ echo "$CLAUDOOK_DIRS" | while read -r dir; do
         fi
     fi
 
-    # Only remove .claude if it's NOT the global directory and is empty
+    # Only remove .claude if it's NOT the global directory and is completely empty
     if [ "$PROJECT_DIR" != "$HOME" ] && [ -d "$PROJECT_DIR/.claude" ]; then
         if [ -z "$(ls -A "$PROJECT_DIR/.claude")" ]; then
             rmdir "$PROJECT_DIR/.claude" 2>/dev/null
             echo "  ✓ Removed empty .claude/"
+        else
+            # List what remains for user awareness
+            REMAINING=$(ls -A "$PROJECT_DIR/.claude" | wc -l | tr -d ' ')
+            echo "  ℹ️  .claude/ contains $REMAINING other items - preserved"
         fi
     fi
 

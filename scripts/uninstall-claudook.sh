@@ -84,11 +84,17 @@ clean_claudook() {
     rm -rf "$DIR/.claude/hooks/claudook"
     echo "  ✓ Removed hooks/claudook/"
 
-    # Remove settings.json if it contains claudook
+    # Handle settings.json carefully - only remove if it contains ONLY claudook
     if [ -f "$DIR/.claude/settings.json" ]; then
         if grep -q "claudook" "$DIR/.claude/settings.json" 2>/dev/null; then
-            rm -f "$DIR/.claude/settings.json"
-            echo "  ✓ Removed settings.json"
+            # Check if settings.json has ONLY claudook content
+            if [ $(grep -v "claudook" "$DIR/.claude/settings.json" | grep -c '"hooks"') -eq 0 ]; then
+                rm -f "$DIR/.claude/settings.json"
+                echo "  ✓ Removed settings.json (contained only Claudook)"
+            else
+                echo "  ⚠️  settings.json contains other hooks - manual cleanup needed"
+                echo "     Edit $DIR/.claude/settings.json and remove claudook lines"
+            fi
         fi
     fi
 
@@ -132,11 +138,13 @@ clean_claudook() {
         fi
     fi
 
-    # Only remove .claude if it's a local project directory
+    # Only remove .claude if it's a local project directory AND completely empty
     if [ "$TYPE" = "LOCAL" ] && [ -d "$DIR/.claude" ]; then
         if [ -z "$(ls -A "$DIR/.claude")" ]; then
             rmdir "$DIR/.claude" 2>/dev/null
             echo "  ✓ Removed empty .claude/"
+        else
+            echo "  ℹ️  .claude/ contains other files - preserved"
         fi
     fi
 
