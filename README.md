@@ -61,7 +61,7 @@ I'll break this down into parallel tasks:
 
 ## 🔥 Current Status
 
-**Version 2.6.0 - Zero-Config with Auto-Approval!**
+**Version 2.7.1 - Fixed! Works everywhere with absolute paths!**
 
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions
@@ -164,11 +164,13 @@ Suggested safer alternative:
 
 #### Option 1: NPX (Recommended)
 ```bash
-npx create-claudook
+npx create-claudook@latest
 
 # If your project uses npm dependencies, also run:
 npm install
 ```
+
+**🎯 Works everywhere!** The installer automatically detects your project path and configures hooks with absolute paths. Install in any directory and it just works!
 
 #### Option 2: Tell Claude
 ```
