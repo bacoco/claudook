@@ -1,0 +1,22 @@
+{
+  "id": "7528efe1bfc536f6",
+  "type": "coder",
+  "name": "Coder Agent",
+  "taskId": "1",
+  "taskTitle": "Implement user authentication",
+  "status": "initializing",
+  "created": "2025-09-15T18:58:16.395Z",
+  "config": {
+    "name": "Coder Agent",
+    "skills": [
+      "implement",
+      "code",
+      "develop",
+      "program",
+      "refactor"
+    ],
+    "prompt": "You are a specialized coding agent. Focus on clean, efficient code implementation."
+  },
+  "results": null,
+  "logs": []
+}
