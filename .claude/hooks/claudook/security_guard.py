@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Security Guard
+Claudook - Security Guard
 Blocks potentially dangerous operations before they execute.
 """
 import json

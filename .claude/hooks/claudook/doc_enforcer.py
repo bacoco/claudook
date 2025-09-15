@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Documentation Enforcer
+Claudook - Documentation Enforcer
 Ensures all functions have proper documentation.
 """
 import json

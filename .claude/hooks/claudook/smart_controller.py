@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Smart Controller
+Claudook - Smart Controller
 Main controller for multiple choice system and test enforcement.
 """
 import json

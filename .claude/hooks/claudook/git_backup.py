@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Git Backup System
+Claudook - Git Backup System
 Suggests creating backup branches for significant changes.
 """
 import json

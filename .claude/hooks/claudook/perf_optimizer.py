@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Performance Optimizer
+Claudook - Performance Optimizer
 Automatically formats and optimizes code after modifications.
 """
 import json

@@ -4,26 +4,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Master Claude Hook is a comprehensive automation system that enhances Claude Code with intelligent workflows and productivity features. This repository contains reusable hook scripts that can be installed globally to add "superpowers" to ALL Claude Code sessions.
+Claudook is a comprehensive automation system that enhances Claude Code with intelligent workflows and productivity features. This repository contains reusable hook scripts that can be installed globally to enhance ALL Claude Code sessions.
 
 **IMPORTANT**: Installation is global to `~/.claude/`, NOT to the current project directory.
 
-## How to Install Claude Hook When User Requests It
+## How to Install Claudook When User Requests It
 
-When a user says "Install Claude Hook from https://github.com/bacoco/claude-hook", use this approach:
+When a user says "Install Claudook from https://github.com/bacoco/claudook", use this approach:
 
 ### Recommended Method: Temporary Clone
 ```bash
 # Clone to /tmp, install globally, then clean up
-git clone https://github.com/bacoco/claude-hook /tmp/claude-hook && \
-  /tmp/claude-hook/install.sh && \
-  rm -rf /tmp/claude-hook
+git clone https://github.com/bacoco/claudook /tmp/claudook && \
+  /tmp/claudook/install.sh && \
+  rm -rf /tmp/claudook
 ```
 
 ### Alternative: Direct Download
 ```bash
 # Download and run installer directly
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
 ```
 
 ### CRITICAL: Tell User to Restart
@@ -36,7 +36,7 @@ The installer:
 1. **Downloads to temp** - Uses `/tmp/` directory, not user's project
 2. **Installs globally** - Everything goes to `~/.claude/`
 3. **Copies only essentials**:
-   - 8 hook scripts → `~/.claude/hooks/claude-hook/`
+   - 8 hook scripts → `~/.claude/hooks/claudook/`
    - 5 commands → `~/.claude/commands/`
    - Settings merged → `~/.claude/settings.json`
 4. **Cleans up** - Removes all temporary files
@@ -55,9 +55,9 @@ The installer:
 
 ### Direct Python Commands
 ```bash
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
-python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
+python3 ~/.claude/hooks/claudook/toggle_controls.py status
+python3 ~/.claude/hooks/claudook/toggle_controls.py enable-choices
+python3 ~/.claude/hooks/claudook/toggle_controls.py enable-tests
 ```
 
 ## Architecture
@@ -143,7 +143,7 @@ Each hook entry specifies:
 1. **Copy the hook files**:
    ```bash
    # From this repo to target project
-   cp -r hooks ~/.claude/hooks/claude-hook/
+   cp -r hooks ~/.claude/hooks/claudook/
    ```
 
 2. **Register hooks in settings**:

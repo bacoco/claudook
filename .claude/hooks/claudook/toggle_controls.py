@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Toggle Controls
-Easy on/off controls for Claude Hook features.
+Claudook - Toggle Controls
+Easy on/off controls for Claudook features.
 """
 import os
 import sys
@@ -56,7 +56,7 @@ def show_status():
     tests_status = "🟢 ON" if os.path.exists(TESTS_FILE) else "🔴 OFF"
     
     print(f"""
-🚀 CLAUDE HOOK STATUS
+🚀 CLAUDOOK STATUS
 =====================
 
 📊 Feature Status:
@@ -71,10 +71,10 @@ def show_status():
   /status          - Show this status
 
 🎛️ Quick Toggle:
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-tests
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-tests
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py disable-choices
+  python3 ~/.claude/hooks/claudook/toggle_controls.py enable-choices
+  python3 ~/.claude/hooks/claudook/toggle_controls.py enable-tests
+  python3 ~/.claude/hooks/claudook/toggle_controls.py disable-tests
+  python3 ~/.claude/hooks/claudook/toggle_controls.py disable-choices
 
 📚 Features Overview:
 
@@ -93,13 +93,13 @@ def show_status():
    ✅ Git Backup Suggestions (always active)
    ✅ Usage Analytics (always active)
 
-🎉 Your Claude CLI has superpowers! Use them wisely.
+🎉 Your Claude CLI is enhanced with Claudook!
     """.strip())
 
 def show_help():
     """Show help information."""
     print("""
-Claude Hook Toggle Controls
+Claudook Toggle Controls
 ===========================
 
 USAGE:
@@ -114,8 +114,8 @@ COMMANDS:
   help              Show this help
 
 EXAMPLES:
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py enable-choices
-  python3 ~/.claude/hooks/claude-hook/toggle_controls.py status
+  python3 ~/.claude/hooks/claudook/toggle_controls.py enable-choices
+  python3 ~/.claude/hooks/claudook/toggle_controls.py status
 
 IN CLAUDE CLI:
   Use slash commands for easier control:

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Analytics Tracker
+Claudook - Analytics Tracker
 Tracks coding patterns and productivity metrics.
 """
 import json

@@ -202,14 +202,14 @@ Create a team configuration repository:
 #!/bin/bash
 # install-team.sh
 
-# Install base claude-hook
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
+# Install base claudook
+curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
 
 # Add team customizations
 cp team-hooks/* ~/.claude/hooks/
 cp team-commands/* ~/.claude/commands/
 
-echo "✅ Team Claude Hook configuration installed!"
+echo "✅ Team Claudook configuration installed!"
 ```
 
 ## Advanced Customization

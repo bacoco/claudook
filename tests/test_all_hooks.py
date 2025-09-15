@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive test suite for Claude Hook system.
+Comprehensive test suite for Claudook system.
 Tests all hooks for proper functionality and output format.
 """
 import json
@@ -60,7 +60,7 @@ def validate_json_output(output):
 
 class HookTester:
     def __init__(self):
-        self.hooks_dir = Path.home() / '.claude' / 'hooks' / 'claude-hook'
+        self.hooks_dir = Path.home() / '.claude' / 'hooks' / 'claudook'
         self.passed = 0
         self.failed = 0
         self.warnings = 0
@@ -213,7 +213,7 @@ class HookTester:
     def run_all_tests(self):
         """Run all tests and print summary."""
         print(f"{BLUE}{'='*50}{NC}")
-        print(f"{BLUE}Claude Hook Test Suite{NC}")
+        print(f"{BLUE}Claudook Test Suite{NC}")
         print(f"{BLUE}{'='*50}{NC}")
 
         self.test_all_hooks_exist()
@@ -230,7 +230,7 @@ class HookTester:
         print(f"{RED}Failed: {self.failed}{NC}")
 
         if self.failed == 0:
-            print(f"\n{GREEN}🎉 All tests passed! Claude Hook is working perfectly.{NC}")
+            print(f"\n{GREEN}🎉 All tests passed! Claudook is working perfectly.{NC}")
             return 0
         else:
             print(f"\n{RED}⚠️ {self.failed} tests failed. Please check the errors above.{NC}")

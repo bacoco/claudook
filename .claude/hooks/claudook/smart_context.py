@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Claude Hook - Smart Context
+Claudook - Smart Context
 Automatically injects relevant project context at session start.
 """
 import json

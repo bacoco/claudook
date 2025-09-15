@@ -210,7 +210,7 @@ rm -rf ~/.claude/hooks/claude-hook/
 rm ~/.claude/choices_enabled ~/.claude/tests_enabled
 rm ~/.claude/commands/{status,enable-*,disable-*}.md
 
-# 3. Clean settings.json (remove claude-hook references)
+# 3. Clean settings.json (remove claudook references)
 python3 << EOF
 import json
 with open('~/.claude/settings.json') as f:

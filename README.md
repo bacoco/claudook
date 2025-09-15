@@ -1,6 +1,6 @@
-# Claude Hook - Enhance Claude Code with Automation Superpowers
+# Claudook - Enhanced Automation for Claude Code
 
-Claude Hook is a comprehensive automation system that enhances Claude Code (claude.ai/code) with intelligent workflows, multiple choice options, test enforcement, security protection, and performance optimization.
+Claudook is a comprehensive automation system that enhances Claude Code (claude.ai/code) with intelligent workflows, multiple choice options, test enforcement, security protection, and performance optimization.
 
 ## ✨ Features
 
@@ -42,21 +42,21 @@ Ensures all code is documented:
 ### Method 1: One-Line Installation (Recommended)
 ```bash
 # Download and run installer directly (no clone needed)
-curl -fsSL https://raw.githubusercontent.com/bacoco/claude-hook/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
 ```
 
 ### Method 2: Temporary Clone & Install
 ```bash
 # Clone to temp directory, install, and clean up
-git clone https://github.com/bacoco/claude-hook /tmp/claude-hook && \
-  /tmp/claude-hook/install.sh && \
-  rm -rf /tmp/claude-hook
+git clone https://github.com/bacoco/claudook /tmp/claudook && \
+  /tmp/claudook/install.sh && \
+  rm -rf /tmp/claudook
 ```
 
 ### Method 3: Let Claude Install It
 Simply tell Claude:
 ```
-Install Claude Hook from https://github.com/bacoco/claude-hook
+Install Claudook from https://github.com/bacoco/claudook
 ```
 
 **⚠️ IMPORTANT:** After installation, you must **restart Claude CLI** for changes to take effect!
@@ -74,9 +74,9 @@ Once installed, use these commands in Claude CLI:
 ## 🔧 Project Structure
 
 ```
-claude-hook/
+claudook/
 ├── .claude/
-│   ├── hooks/claude-hook/    # All hook scripts
+│   ├── hooks/claudook/        # All hook scripts
 │   ├── commands/              # Slash commands
 │   └── settings-hook.json     # Hook configuration
 ├── install.sh                 # Installation script
@@ -101,7 +101,7 @@ After installation:
 ## 🧪 What Gets Installed
 
 Only the essential files are installed to `~/.claude/`:
-- **8 hook scripts** in `~/.claude/hooks/claude-hook/`
+- **8 hook scripts** in `~/.claude/hooks/claudook/`
 - **5 commands** in `~/.claude/commands/`
 - **Settings merged** into `~/.claude/settings.json`
 
@@ -125,7 +125,7 @@ No documentation, tests, or other files are copied to your system.
 
 ### Add Your Own Hooks
 
-1. Create a Python script in `.claude/hooks/claude-hook/`
+1. Create a Python script in `.claude/hooks/claudook/`
 2. Register it in `.claude/settings-hook.json`
 3. Add a command in `.claude/commands/`
 
@@ -157,10 +157,10 @@ Contributions welcome! Please:
 
 ## 🌟 Support
 
-- **Issues**: [GitHub Issues](https://github.com/bacoco/claude-hook/issues)
+- **Issues**: [GitHub Issues](https://github.com/bacoco/claudook/issues)
 - **Documentation**: Check the `docs/` directory
 - **Quick Test**: Run `./verify-installation.sh`
 
 ---
 
-**Ready to supercharge your Claude Code experience?** Run `./install.sh` and start coding with superpowers! 🚀
+**Ready to enhance your Claude Code experience?** Run `./install.sh` and start coding with Claudook! 🚀

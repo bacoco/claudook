@@ -19,18 +19,16 @@ cat << "EOF"
  | |_____| | (_| | |_| | (_| |  __/ | |  | | (_) | (_) |   <
   \______|_|\__,_|\__,_|\__,_|\___| |_|  |_|\___/ \___/|_|\_\
 
-   ____
-  / ____|
- | (___  _   _ _ __   ___ _ __ _ __   _____      _____ _ __ ___
-  \___ \| | | | '_ \ / _ \ '__| '_ \ / _ \ \ /\ / / _ \ '__/ __|
-  ____) | |_| | |_) |  __/ |  | |_) | (_) \ V  V /  __/ |  \__ \
- |_____/ \__,_| .__/ \___|_|  | .__/ \___/ \_/\_/ \___|_|  |___/
-              | |            | |
-              |_|            |_|
+   _____ _                 _             _
+  / ____| |               | |           | |
+ | |    | | __ _ _   _  __| | ___   ___ | | __
+ | |    | |/ _` | | | |/ _` |/ _ \ / _ \| |/ /
+ | |____| | (_| | |_| | (_| | (_) | (_) |   <
+  \_____|_|\__,_|\__,_|\__,_|\___/ \___/|_|\_\
 EOF
 echo -e "${NC}"
 
-echo -e "${PURPLE}🚀 Installing Claude Hook Superpowers...${NC}"
+echo -e "${PURPLE}🚀 Installing Claudook Enhancement System...${NC}"
 echo "=============================================="
 
 # Check if Claude CLI is installed
@@ -58,22 +56,22 @@ echo -e "${GREEN}✅ Python 3 detected${NC}"
 REPO_DIR=""
 TEMP_DIR=""
 
-# Check if we're in the claude-hook repo
-if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claude-hook/smart_controller.py" ]; then
+# Check if we're in the claudook repo
+if [ -f "$(dirname "${BASH_SOURCE[0]}")/.claude/hooks/claudook/smart_controller.py" ]; then
     REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo -e "${GREEN}✅ Using local repository files${NC}"
 # Check if script was downloaded to a specific location
-elif [ -f "${HOME}/.claude-hook-temp/.claude/hooks/claude-hook/smart_controller.py" ]; then
-    REPO_DIR="${HOME}/.claude-hook-temp"
+elif [ -f "${HOME}/.claudook-temp/.claude/hooks/claudook/smart_controller.py" ]; then
+    REPO_DIR="${HOME}/.claudook-temp"
     echo -e "${GREEN}✅ Using cached files${NC}"
 else
     # Download from GitHub
-    echo -e "${BLUE}📥 Downloading Claude Hook from GitHub...${NC}"
+    echo -e "${BLUE}📥 Downloading Claudook from GitHub...${NC}"
     TEMP_DIR=$(mktemp -d)
 
     # Download method 1: Try using git (fastest)
     if command -v git &> /dev/null; then
-        git clone --quiet --depth 1 https://github.com/bacoco/claude-hook "$TEMP_DIR" 2>/dev/null || {
+        git clone --quiet --depth 1 https://github.com/bacoco/claudook "$TEMP_DIR" 2>/dev/null || {
             echo -e "${YELLOW}Git clone failed, trying alternative method...${NC}"
             TEMP_DIR=""
         }
@@ -83,9 +81,9 @@ else
     if [ -z "$TEMP_DIR" ] || [ ! -d "$TEMP_DIR/.claude" ]; then
         TEMP_DIR=$(mktemp -d)
         if command -v curl &> /dev/null; then
-            curl -fsSL https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+            curl -fsSL https://github.com/bacoco/claudook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
         elif command -v wget &> /dev/null; then
-            wget -qO- https://github.com/bacoco/claude-hook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
+            wget -qO- https://github.com/bacoco/claudook/archive/main.tar.gz | tar -xz -C "$TEMP_DIR" --strip-components=1
         else
             echo -e "${RED}❌ Neither git, curl, nor wget found. Please install one.${NC}"
             exit 1
@@ -96,7 +94,7 @@ else
 fi
 
 # Verify required files exist
-if [ ! -f "$REPO_DIR/.claude/hooks/claude-hook/smart_controller.py" ]; then
+if [ ! -f "$REPO_DIR/.claude/hooks/claudook/smart_controller.py" ]; then
     echo -e "${RED}❌ Required hook files not found. Installation aborted.${NC}"
     [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
@@ -104,17 +102,17 @@ fi
 
 # Create directories
 echo -e "${BLUE}📁 Creating directories...${NC}"
-mkdir -p ~/.claude/hooks/claude-hook
+mkdir -p ~/.claude/hooks/claudook
 mkdir -p ~/.claude/commands
 
 # Copy ONLY the necessary files (not docs, tests, etc.)
 echo -e "${BLUE}🔧 Installing hooks...${NC}"
-cp "$REPO_DIR"/.claude/hooks/claude-hook/*.py ~/.claude/hooks/claude-hook/ 2>/dev/null || {
+cp "$REPO_DIR"/.claude/hooks/claudook/*.py ~/.claude/hooks/claudook/ 2>/dev/null || {
     echo -e "${RED}❌ Failed to copy hook files${NC}"
     [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
 }
-chmod +x ~/.claude/hooks/claude-hook/*.py
+chmod +x ~/.claude/hooks/claudook/*.py
 
 # Copy command files
 echo -e "${BLUE}⚡ Installing slash commands...${NC}"
@@ -160,9 +158,9 @@ for event, hooks in new_config.get('hooks', {}).items():
     if event not in existing['hooks']:
         existing['hooks'][event] = hooks
     else:
-        # Check if claude-hook already exists to avoid duplicates
+        # Check if claudook already exists to avoid duplicates
         existing_str = str(existing['hooks'][event])
-        if 'claude-hook' not in existing_str:
+        if 'claudook' not in existing_str:
             if isinstance(existing['hooks'][event], list):
                 existing['hooks'][event].extend(hooks)
             else:
@@ -195,7 +193,7 @@ fi
 
 # Test installation
 echo -e "${BLUE}🧪 Testing installation...${NC}"
-if python3 ~/.claude/hooks/claude-hook/toggle_controls.py status > /dev/null 2>&1; then
+if python3 ~/.claude/hooks/claudook/toggle_controls.py status > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Installation test passed${NC}"
 else
     echo -e "${YELLOW}⚠️ Installation test had issues, but continuing...${NC}"
@@ -223,7 +221,7 @@ echo ""
 echo -e "${RED}⚠️  IMPORTANT: You must restart Claude CLI for changes to take effect!${NC}"
 echo -e "${YELLOW}    Please exit Claude and run 'claude' again.${NC}"
 echo ""
-echo -e "${PURPLE}🦸‍♀️ Your Claude CLI now has superpowers!${NC}"
+echo -e "${PURPLE}✨ Claudook enhancement system activated!${NC}"
 echo ""
 echo -e "${CYAN}Quick test after restart:${NC}"
 echo "  1. Exit Claude (type 'exit' or Ctrl+C)"

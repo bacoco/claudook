@@ -393,8 +393,8 @@ CLAUDE_HOOK_DEBUG=true python3 your_hook.py session-start
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `CLAUDE_HOOK_DEBUG` | Enable debug output | `false` |
-| `CLAUDE_HOOK_VERBOSE` | Enable verbose logging | `false` |
+| `CLAUDOOK_DEBUG` | Enable debug output | `false` |
+| `CLAUDOOK_VERBOSE` | Enable verbose logging | `false` |
 | `CLAUDE_CHOICES_ENABLED` | Enable choice system | `true` |
 | `CLAUDE_TESTS_ENABLED` | Enable test enforcement | `true` |
 | `CLAUDE_SECURITY_LEVEL` | Security level (strict/normal/permissive) | `normal` |

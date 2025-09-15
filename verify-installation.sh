@@ -7,7 +7,7 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🔍 Claude Hook Installation Verification${NC}"
+echo -e "${BLUE}🔍 Claudook Installation Verification${NC}"
 echo "=========================================="
 
 ERRORS=0
@@ -15,11 +15,11 @@ WARNINGS=0
 
 # 1. Check if hooks directory exists
 echo -e "\n${BLUE}Checking hook files...${NC}"
-if [ -d ~/.claude/hooks/claude-hook ]; then
+if [ -d ~/.claude/hooks/claudook ]; then
     echo -e "${GREEN}✅ Hook directory exists${NC}"
 
     # Count hook files
-    HOOK_COUNT=$(ls ~/.claude/hooks/claude-hook/*.py 2>/dev/null | wc -l)
+    HOOK_COUNT=$(ls ~/.claude/hooks/claudook/*.py 2>/dev/null | wc -l)
     if [ "$HOOK_COUNT" -eq 8 ]; then
         echo -e "${GREEN}✅ All 8 hook files present${NC}"
     else
@@ -28,7 +28,7 @@ if [ -d ~/.claude/hooks/claude-hook ]; then
     fi
 
     # Check if executable
-    NON_EXEC=$(find ~/.claude/hooks/claude-hook -name "*.py" ! -perm -u+x | wc -l)
+    NON_EXEC=$(find ~/.claude/hooks/claudook -name "*.py" ! -perm -u+x | wc -l)
     if [ "$NON_EXEC" -eq 0 ]; then
         echo -e "${GREEN}✅ All hooks are executable${NC}"
     else
@@ -60,11 +60,11 @@ fi
 # 3. Check settings.json integration
 echo -e "\n${BLUE}Checking settings integration...${NC}"
 if [ -f ~/.claude/settings.json ]; then
-    if grep -q "claude-hook" ~/.claude/settings.json; then
-        HOOK_COUNT=$(grep -c "claude-hook" ~/.claude/settings.json)
-        echo -e "${GREEN}✅ Settings.json contains $HOOK_COUNT claude-hook references${NC}"
+    if grep -q "claudook" ~/.claude/settings.json; then
+        HOOK_COUNT=$(grep -c "claudook" ~/.claude/settings.json)
+        echo -e "${GREEN}✅ Settings.json contains $HOOK_COUNT claudook references${NC}"
     else
-        echo -e "${RED}❌ No claude-hook references in settings.json${NC}"
+        echo -e "${RED}❌ No claudook references in settings.json${NC}"
         ERRORS=$((ERRORS + 1))
     fi
 else
@@ -88,7 +88,7 @@ fi
 
 # 5. Test toggle controls
 echo -e "\n${BLUE}Testing toggle controls...${NC}"
-if python3 ~/.claude/hooks/claude-hook/toggle_controls.py status > /dev/null 2>&1; then
+if python3 ~/.claude/hooks/claudook/toggle_controls.py status > /dev/null 2>&1; then
     echo -e "${GREEN}✅ Toggle controls working${NC}"
 else
     echo -e "${RED}❌ Toggle controls failed${NC}"
@@ -99,7 +99,7 @@ fi
 echo -e "\n${BLUE}Testing security guard...${NC}"
 # Test safe command (should pass)
 echo '{"tool_name": "Bash", "tool_input": {"command": "ls"}}' | \
-    python3 ~/.claude/hooks/claude-hook/security_guard.py > /dev/null 2>&1
+    python3 ~/.claude/hooks/claudook/security_guard.py > /dev/null 2>&1
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Security guard allows safe commands${NC}"
 else
@@ -109,7 +109,7 @@ fi
 
 # Test dangerous command (should fail)
 echo '{"tool_name": "Bash", "tool_input": {"command": "rm -rf /"}}' | \
-    python3 ~/.claude/hooks/claude-hook/security_guard.py > /dev/null 2>&1
+    python3 ~/.claude/hooks/claudook/security_guard.py > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     echo -e "${GREEN}✅ Security guard blocks dangerous commands${NC}"
 else
@@ -119,7 +119,7 @@ fi
 
 # 7. Test smart controller
 echo -e "\n${BLUE}Testing smart controller...${NC}"
-OUTPUT=$(python3 ~/.claude/hooks/claude-hook/smart_controller.py session-start 2>/dev/null)
+OUTPUT=$(python3 ~/.claude/hooks/claudook/smart_controller.py session-start 2>/dev/null)
 if echo "$OUTPUT" | grep -q "hookSpecificOutput"; then
     echo -e "${GREEN}✅ Smart controller returns proper JSON${NC}"
 else
@@ -134,7 +134,7 @@ echo -e "${BLUE}Verification Summary:${NC}"
 if [ $ERRORS -eq 0 ]; then
     if [ $WARNINGS -eq 0 ]; then
         echo -e "${GREEN}🎉 Perfect! All checks passed.${NC}"
-        echo -e "${GREEN}Claude Hook is fully installed and operational!${NC}"
+        echo -e "${GREEN}Claudook is fully installed and operational!${NC}"
     else
         echo -e "${GREEN}✅ Installation successful with $WARNINGS warnings.${NC}"
         echo -e "${YELLOW}Some optional features may need attention.${NC}"
