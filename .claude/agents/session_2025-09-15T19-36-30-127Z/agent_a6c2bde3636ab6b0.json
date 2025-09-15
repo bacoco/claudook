@@ -1,0 +1,22 @@
+{
+  "id": "a6c2bde3636ab6b0",
+  "type": "tester",
+  "name": "Tester Agent",
+  "taskId": "2",
+  "taskTitle": "Test authentication flow",
+  "status": "initializing",
+  "created": "2025-09-15T19:36:30.129Z",
+  "config": {
+    "name": "Tester Agent",
+    "skills": [
+      "test",
+      "verify",
+      "validate",
+      "check",
+      "qa"
+    ],
+    "prompt": "You are a testing specialist. Create comprehensive tests and ensure quality."
+  },
+  "results": null,
+  "logs": []
+}

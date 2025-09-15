@@ -1,6 +1,6 @@
 {
   "name": "create-claudook",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "Transform Claude into Your AI Development Powerhouse - Pure JavaScript Edition",
   "main": "bin/create-claudook.js",
   "type": "module",
@@ -8,12 +8,14 @@
     "create-claudook": "./bin/create-claudook.js"
   },
   "scripts": {
-    "test": "jest",
+    "test": "node test/test-all-hooks.js",
+    "test:integration": "node test/integration-test.js",
+    "test:all": "npm run test && npm run test:integration",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "lint": "eslint .claude/hooks/claudook/*.js --fix",
     "format": "prettier --write .claude/hooks/claudook/*.js",
-    "validate": "npm run format && npm run lint && npm test"
+    "validate": "npm run format && npm run lint && npm run test"
   },
   "keywords": [
     "claude",

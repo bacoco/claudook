@@ -61,7 +61,7 @@ I'll break this down into parallel tasks:
 
 ## 🔥 Current Status
 
-**Version 2.3.0 - 15 Hooks Now Available!**
+**Version 2.5.0 - 15 Hooks Now Available with Full Test Coverage!**
 
 **All features are now ACTIVE and working:**
 - 🟢 **Multiple Choice System**: ON - Claude offers A/B/C options for complex decisions
@@ -438,8 +438,14 @@ Everything is customizable with JavaScript. Edit `.claude/hooks/claudook/*.js` t
 
 ### Running Tests
 ```bash
-# Run all tests
+# Run all unit tests (15 hooks)
 npm test
+
+# Run integration tests
+npm run test:integration
+
+# Run all tests
+npm run test:all
 
 # Run with coverage
 npm run test:coverage

@@ -1,0 +1,21 @@
+{
+  "id": "ac9b445aa53da534",
+  "type": "documenter",
+  "name": "Documenter Agent",
+  "taskId": "3",
+  "taskTitle": "Document API endpoints",
+  "status": "initializing",
+  "created": "2025-09-15T19:35:22.771Z",
+  "config": {
+    "name": "Documenter Agent",
+    "skills": [
+      "document",
+      "explain",
+      "describe",
+      "write docs"
+    ],
+    "prompt": "You are a documentation specialist. Create clear, comprehensive documentation."
+  },
+  "results": null,
+  "logs": []
+}
