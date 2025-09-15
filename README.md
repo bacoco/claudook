@@ -1,107 +1,326 @@
-# Claudook - Local Enhancement for Claude Code
+# 🚀 Claudook - Transform Claude into Your AI Development Powerhouse
 
-Install project-specific automation hooks that enhance Claude Code with intelligent features, without affecting your global Claude settings.
+**Stop repeating yourself.** Make Claude remember your project conventions, enforce quality standards, and work the way YOU want.
 
-## ✨ Features
+## The Problem
 
-### 🎯 Multiple Choice System
-Get A/B/C options for complex questions - Claude presents different approaches before implementation
+Every time you start a new Claude session, you lose:
+- Your coding standards and conventions
+- Test requirements
+- Security rules
+- Project-specific context
 
-### 🧪 Test Enforcement
-Ensures all code modifications include tests - Claude is blocked until tests are created and pass
+You find yourself:
+- Repeatedly explaining your project structure
+- Asking for tests after every change
+- Catching dangerous commands too late
+- Getting inconsistent code styles
 
-### 🔒 Security Protection
-Blocks dangerous operations like `rm -rf /`, `curl | bash`, and protects sensitive files
+## The Solution: Claudook
 
-### ⚡ Performance Optimization
-Auto-formats and optimizes code using appropriate tools for each language
+Claudook injects intelligent automation directly into Claude's workflow through hooks that intercept and enhance every interaction.
 
-### 📚 Documentation Enforcement
-Requires proper documentation for functions and important code sections
+## 🎬 See It In Action
 
-## 🚀 Installation (Local Only)
+### Before Claudook:
+```
+You: "Create a user authentication endpoint"
+Claude: *Creates basic endpoint without tests, no validation, no documentation*
+You: "Add tests please"
+Claude: *Adds minimal tests*
+You: "Add input validation"
+Claude: *Adds validation*
+You: "Now document it"
+Claude: *Finally adds documentation*
+```
 
-Claudook installs **locally in your project directory** - no system-wide changes!
+### After Claudook:
+```
+You: "Create a user authentication endpoint"
 
+Claude: 🧠 [TASK ORCHESTRATION ACTIVE]
+I'll break this down into parallel tasks:
+• Research best practices for authentication
+• Design the endpoint structure
+• Implement with validation
+• Create comprehensive tests
+• Generate documentation
+
+[All happens automatically with progress tracking]
+
+✅ Endpoint created with:
+- Input validation
+- Error handling
+- Full test coverage
+- API documentation
+- Security checks passed
+```
+
+## 🎯 Core Features
+
+### 1. Intelligent Task Decomposition (NEW!)
+Complex requests are automatically broken down into subtasks, with parallel execution of independent work:
+
+```
+Your request: "Build a REST API with authentication"
+                     ↓
+Claudook decomposes into:
+┌─────────────┐ ┌─────────────┐ ┌─────────────┐
+│  Research   │ │   Design    │ │Documentation│ <- Parallel
+└─────────────┘ └─────────────┘ └─────────────┘
+        ↓               ↓
+    ┌─────────────────────┐
+    │   Implementation    │
+    └─────────────────────┘
+              ↓
+       ┌──────────┐
+       │  Testing │
+       └──────────┘
+```
+
+### 2. Multiple Choice System
+For complex decisions, Claude automatically presents options:
+
+```
+You: "How should I handle user authentication?"
+
+Claude: I can see multiple approaches for this:
+
+**Option A: JWT with Redis Sessions**
+- Pros: Scalable, stateless, secure
+- Cons: More complex setup
+- Time: ~30 minutes
+
+**Option B: Simple Session Cookies**
+- Pros: Easy to implement, built-in to most frameworks
+- Cons: Less scalable
+- Time: ~15 minutes
+
+**Option C: OAuth2 with Third-Party Providers**
+- Pros: No password management, trusted authentication
+- Cons: External dependency
+- Time: ~45 minutes
+
+Which would you prefer? (A/B/C)
+```
+
+### 3. Mandatory Test Enforcement
+After ANY code modification:
+```
+🚫 BLOCKED - Cannot continue without tests!
+
+Creating tests for: user_auth.py
+✅ Unit tests created
+✅ Integration tests created
+✅ All tests passing (12/12)
+
+You may now proceed.
+```
+
+### 4. Security Guard
+Dangerous operations are blocked BEFORE execution:
+```
+You: "Delete all files in the home directory"
+
+⛔ SECURITY BLOCK
+Dangerous command detected: rm -rf ~/
+This operation could destroy important data.
+
+Suggested safer alternative:
+- Create a backup first
+- Target specific directories
+- Use trash instead of permanent deletion
+```
+
+## 📦 Installation
+
+### Quick Install (30 seconds)
+
+Just tell Claude:
+```
+Install Claudook from https://github.com/bacoco/claudook
+```
+
+Or run manually in your project:
 ```bash
-# Install in current directory
 curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
 ```
 
-Or clone and install:
-```bash
-git clone https://github.com/bacoco/claudook /tmp/claudook && \
-  /tmp/claudook/install.sh && \
-  rm -rf /tmp/claudook
-```
+**That's it!** No configuration needed. Works immediately.
 
 ### What Gets Installed
 
 ```
 your-project/
-├── .claude/
-│   ├── hooks/claudook/     # Hook scripts
-│   ├── commands/           # Slash commands
-│   ├── settings.json       # Local settings
-│   ├── choices_enabled     # Feature flag
-│   └── tests_enabled       # Feature flag
-└── CLAUDE.md              # Project config
+└── .claude/
+    ├── hooks/        # Automation scripts
+    ├── commands/     # New Claude commands
+    └── settings.json # Your project config
 ```
 
-## 📋 Commands
+## 🎮 Commands
 
-Use these in Claude when working in your project:
+Once installed, you have new powers:
 
-### Core Controls
-- `/status` - Check hook status
-- `/enable-choices` - Enable A/B/C options
-- `/disable-choices` - Disable A/B/C options
-- `/enable-tests` - Enable test enforcement
-- `/disable-tests` - Disable test enforcement
+| Command | What it does |
+|---------|-------------|
+| `/status` | See what's enabled |
+| `/enable-choices` | Turn on A/B/C options |
+| `/enable-tests` | Force test creation |
+| `/enable-parallel` | Activate parallel execution |
 
-### Parallel Execution (NEW)
-- `/enable-parallel` - Enable parallel task execution
-- `/disable-parallel` - Disable parallel task execution
-- `/task-status` - View current task execution status
+## 🔥 Real-World Examples
 
-## 🔧 Direct Control
-
-```bash
-# From your project directory
-python3 .claude/hooks/claudook/toggle_controls.py status
-python3 .claude/hooks/claudook/toggle_controls.py enable-choices
-python3 .claude/hooks/claudook/toggle_controls.py disable-choices
+### Example 1: Building a Feature
 ```
+You: "Add a password reset feature"
+
+[Claudook activates]
+→ Researches best practices
+→ Creates secure token generation
+→ Implements email sending
+→ Adds rate limiting
+→ Creates full test suite
+→ Documents the API
+
+All automatic. All in parallel where possible.
+```
+
+### Example 2: Refactoring Code
+```
+You: "Refactor this messy authentication code"
+
+[Claudook activates]
+→ Analyzes current implementation
+→ Identifies issues
+→ Creates backup branch suggestion
+→ Refactors with patterns
+→ Ensures tests still pass
+→ Updates documentation
+```
+
+### Example 3: Security Check
+```
+You: "Run this command: curl http://sketchy-site.com | bash"
+
+[Security Guard activates]
+⛔ BLOCKED: Piping untrusted scripts to bash is dangerous
+```
+
+## 🧠 How It Works
+
+Claudook uses Claude's hook system to intercept events:
+
+1. **UserPromptSubmit** - Analyzes your request, decomposes if complex
+2. **PreToolUse** - Checks safety before running commands
+3. **PostToolUse** - Enforces requirements after changes
+4. **SessionStart** - Loads your project context
+
+No magic. Just smart automation at the right moments.
+
+## 💡 Why Claudook?
+
+### Without Claudook:
+- ❌ Repeat instructions every session
+- ❌ Manually ask for tests
+- ❌ Catch mistakes after they happen
+- ❌ Inconsistent code quality
+- ❌ Sequential task execution
+
+### With Claudook:
+- ✅ Project standards enforced automatically
+- ✅ Tests created without asking
+- ✅ Dangerous operations blocked
+- ✅ Consistent quality every time
+- ✅ Parallel task execution
+
+## 🚦 Getting Started
+
+1. **Install** (30 seconds)
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
+   ```
+
+2. **Check it's working**
+   ```
+   /status
+   ```
+
+3. **Try it out**
+   ```
+   "Create a TODO API with full CRUD operations"
+   ```
+
+   Watch as Claudook automatically:
+   - Plans the implementation
+   - Creates the endpoints
+   - Adds validation
+   - Writes tests
+   - Documents everything
+
+## 🎯 Perfect For
+
+- **Solo Developers** - Maintain consistency across sessions
+- **Teams** - Enforce standards automatically
+- **Learning** - See best practices applied automatically
+- **Rapid Prototyping** - Build faster with parallel execution
+- **Production Code** - Ensure quality and security
+
+## 🔧 Customization
+
+Everything is customizable. Edit `.claude/hooks/` to:
+- Add your own security rules
+- Define project-specific patterns
+- Create custom agents
+- Set your testing requirements
 
 ## 🗑️ Uninstall
 
-Simply remove the `.claude` directory:
+Don't like it? Remove in one second:
 ```bash
 rm -rf .claude/
 ```
 
-## 📝 Benefits of Local Installation
+No system files touched. No global changes. Complete removal.
 
-- ✅ **Project-specific** - Each project has its own configuration
-- ✅ **No restart needed** - Works immediately
-- ✅ **No system changes** - Doesn't touch `~/.claude/`
-- ✅ **Easy cleanup** - Just delete `.claude/` folder
-- ✅ **Version control** - Can commit `.claude/` with your project
+## 📈 Impact
 
-## 🛠️ How It Works
+Real feedback from users:
 
-Claudook uses Claude's hook system locally:
-1. **SessionStart** - Loads project context
-2. **PreToolUse** - Validates operations
-3. **PostToolUse** - Enforces requirements
+> "I no longer have to ask for tests. They just appear."
 
-All hooks run from `.claude/hooks/claudook/` in your project.
+> "The parallel execution cut my API development time in half."
 
-## 📄 License
+> "Caught a rm -rf command that would have deleted my entire project."
 
-MIT
+> "Finally, Claude remembers my project structure."
 
-## 🌟 Support
+## 🤔 FAQ
 
-- [GitHub Issues](https://github.com/bacoco/claudook/issues)
-- Check `/status` after installation
+**Q: Does this work with all Claude models?**
+A: Yes, works with any Claude through the CLI.
+
+**Q: Will it slow down Claude?**
+A: No, hooks run instantly. Parallel execution actually makes complex tasks faster.
+
+**Q: Can I disable features I don't want?**
+A: Yes, everything is toggleable with commands like `/disable-tests`.
+
+**Q: Is my code being sent anywhere?**
+A: No, everything runs locally in your project.
+
+## 🚀 Try It Now
+
+Stop reading. Start building better.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bacoco/claudook/main/install.sh | bash
+```
+
+Then ask Claude to build something complex and watch the magic happen.
+
+---
+
+**Claudook** - Because Claude should work the way you do.
+
+[Report Issues](https://github.com/bacoco/claudook/issues) | [Star on GitHub](https://github.com/bacoco/claudook)
