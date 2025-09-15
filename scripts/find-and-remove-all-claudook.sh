@@ -13,10 +13,46 @@ echo "=========================================="
 # Start from current directory or provided path
 SEARCH_PATH="${1:-$(pwd)}"
 
-echo -e "${YELLOW}Searching for ALL Claudook installations from: ${SEARCH_PATH}${NC}"
+echo -e "${YELLOW}Searching for Claudook installations...${NC}"
+echo -e "${BLUE}Search path: ${SEARCH_PATH}${NC}"
+
+# Ask about search scope
+echo
+echo -e "${YELLOW}Choose search scope:${NC}"
+echo "  1) Current directory only ($(basename $SEARCH_PATH))"
+echo "  2) Current directory and subdirectories (default)"
+echo "  3) Parent directory and all subdirectories"
+echo "  4) Home directory (slow, comprehensive)"
+echo
+
+read -p "$(echo -e ${BLUE}Select option [1-4, default=2]: ${NC})" -n 1 SCOPE
+echo
+
+case "$SCOPE" in
+    1)
+        SEARCH_DEPTH="-maxdepth 3"
+        echo -e "${GREEN}Searching current directory only...${NC}"
+        ;;
+    3)
+        SEARCH_PATH="$(dirname $SEARCH_PATH)"
+        SEARCH_DEPTH=""
+        echo -e "${GREEN}Searching from parent: ${SEARCH_PATH}${NC}"
+        ;;
+    4)
+        SEARCH_PATH="$HOME"
+        SEARCH_DEPTH=""
+        echo -e "${YELLOW}⚠️  Searching entire home directory (this may take a while)...${NC}"
+        ;;
+    *)
+        SEARCH_DEPTH=""
+        echo -e "${GREEN}Searching current directory and subdirectories...${NC}"
+        ;;
+esac
+
+echo
 
 # Find all .claude directories that contain claudook
-CLAUDOOK_DIRS=$(find "$SEARCH_PATH" -type d -path "*/.claude/hooks/claudook" 2>/dev/null)
+CLAUDOOK_DIRS=$(find "$SEARCH_PATH" $SEARCH_DEPTH -type d -path "*/.claude/hooks/claudook" 2>/dev/null)
 
 # Check global installation separately
 GLOBAL_FOUND=false
