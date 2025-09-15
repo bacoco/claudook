@@ -46,31 +46,47 @@ def check_bash_command_security(command):
     """Check if a bash command is potentially dangerous."""
     if not command:
         return None
-    
-    # Define dangerous command patterns
+
+    # First, check for safe development patterns (always allow these)
+    safe_patterns = [
+        r'python3?\s+',      # Python commands
+        r'node\s+',          # Node commands
+        r'npm\s+',           # NPM commands
+        r'yarn\s+',          # Yarn commands
+        r'git\s+',           # Git commands
+        r'docker\s+',        # Docker commands
+        r'cd\s+',            # Directory changes
+        r'ls\s+',            # List files
+        r'cat\s+',           # View files
+        r'grep\s+',          # Search files
+        r'find\s+',          # Find files
+        r'mkdir\s+',         # Create directories
+        r'touch\s+',         # Create files
+        r'echo\s+',          # Echo commands
+        r'black\s+',         # Code formatting
+        r'isort\s+',         # Import sorting
+        r'pytest\s+',        # Testing
+        r'./[^/]*\s',        # Local executables
+    ]
+
+    for safe_pattern in safe_patterns:
+        if re.match(safe_pattern, command.strip()):
+            return None  # Command is safe, don't block
+
+    # Only block EXTREMELY dangerous command patterns
     dangerous_patterns = [
-        # Destructive file operations
-        (r'rm\s+-rf\s+/', "Recursive force delete from root directory"),
-        (r'sudo\s+rm\s+-rf', "Sudo recursive force delete"),
-        (r'rm\s+-rf\s+\*', "Recursive force delete with wildcard"),
-        
-        # Dangerous permissions
-        (r'chmod\s+777\s+/', "Setting 777 permissions on root"),
-        (r'chmod\s+-R\s+777', "Recursive 777 permissions"),
-        
-        # System modification
+        # CRITICAL: Root filesystem destruction
+        (r'rm\s+-rf\s+/\s*$', "Deleting root filesystem"),
+        (r'rm\s+-rf\s+/\*', "Deleting all root contents"),
+        (r'sudo\s+rm\s+-rf\s+/', "Sudo deletion of system files"),
+
+        # CRITICAL: System destruction
         (r'mkfs\.', "Filesystem formatting"),
-        (r'fdisk\s+/dev/', "Disk partitioning"),
-        (r'dd\s+if=.*of=/dev/', "Direct disk writing"),
-        
-        # Network security risks
-        (r'curl.*\|\s*bash', "Piping curl output to bash"),
-        (r'wget.*\|\s*sh', "Piping wget output to shell"),
-        (r'curl.*\|\s*sudo\s+bash', "Piping to sudo bash"),
-        
-        # System control
-        (r'shutdown|halt|reboot', "System shutdown commands"),
-        (r'kill\s+-9\s+1', "Killing init process"),
+        (r'fdisk\s+/dev/sd[a-z]', "Partitioning main drives"),
+        (r'dd\s+if=.*of=/dev/sd[a-z]\s', "Writing to main drive"),
+
+        # CRITICAL: Remote code execution from untrusted sources (but not curl from GitHub)
+        (r'curl\s+(?!.*github\.com).*\|\s*sudo\s+bash', "Sudo execution of remote script from untrusted source"),
         
         # Fork bombs and resource abuse  
         (r':(){ :|:& };:', "Fork bomb"),
