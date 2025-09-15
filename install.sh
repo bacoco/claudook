@@ -103,17 +103,32 @@ mkdir -p "$INSTALL_DIR/.claude/commands"
 
 # Copy hook files
 echo -e "${BLUE}🔧 Installing hooks locally...${NC}"
-cp "$REPO_DIR"/.claude/hooks/claudook/*.py "$INSTALL_DIR/.claude/hooks/claudook/" 2>/dev/null || {
-    echo -e "${RED}❌ Failed to copy hook files${NC}"
+if ls "$REPO_DIR"/.claude/hooks/claudook/*.py 1> /dev/null 2>&1; then
+    cp "$REPO_DIR"/.claude/hooks/claudook/*.py "$INSTALL_DIR/.claude/hooks/claudook/"
+    chmod +x "$INSTALL_DIR/.claude/hooks/claudook/"*.py
+    echo -e "${GREEN}✅ Hook files installed${NC}"
+else
+    echo -e "${RED}❌ Failed to copy hook files - no Python files found in $REPO_DIR/.claude/hooks/claudook/${NC}"
+    echo -e "${YELLOW}Debug: Checking directory structure...${NC}"
+    ls -la "$REPO_DIR/.claude/" 2>/dev/null || echo "Cannot access $REPO_DIR/.claude/"
+    ls -la "$REPO_DIR/.claude/hooks/" 2>/dev/null || echo "Cannot access hooks directory"
+    ls -la "$REPO_DIR/.claude/hooks/claudook/" 2>/dev/null || echo "Cannot access claudook directory"
     [ -n "$TEMP_DIR" ] && rm -rf "$TEMP_DIR"
     exit 1
-}
-chmod +x "$INSTALL_DIR/.claude/hooks/claudook/"*.py
+fi
 
-# Copy command files
+# Copy command files - handle new claudook/ subdirectory structure
 echo -e "${BLUE}⚡ Installing slash commands locally...${NC}"
-cp "$REPO_DIR"/.claude/commands/*.md "$INSTALL_DIR/.claude/commands/" 2>/dev/null || {
-    echo -e "${YELLOW}⚠️ Commands not found, creating basic ones...${NC}"
+if [ -d "$REPO_DIR/.claude/commands/claudook" ]; then
+    # New structure with claudook subdirectory
+    mkdir -p "$INSTALL_DIR/.claude/commands/claudook"
+    cp -r "$REPO_DIR"/.claude/commands/claudook/* "$INSTALL_DIR/.claude/commands/claudook/" 2>/dev/null && {
+        echo -e "${GREEN}✅ Commands installed (new structure)${NC}"
+    }
+elif [ -d "$REPO_DIR/.claude/commands" ]; then
+    # Try old structure as fallback
+    cp "$REPO_DIR"/.claude/commands/*.md "$INSTALL_DIR/.claude/commands/" 2>/dev/null || {
+        echo -e "${YELLOW}⚠️ Commands not found, creating basic ones...${NC}"
 }
 
 # Create local settings file
@@ -249,11 +264,12 @@ echo ""
 echo -e "${BLUE}📁 Installed in: ${CYAN}$INSTALL_DIR/.claude/${NC}"
 echo ""
 echo -e "${BLUE}🎯 Available Commands:${NC}"
-echo "  ${YELLOW}/status${NC}           - Check current status"
-echo "  ${YELLOW}/enable-choices${NC}   - Turn on A/B/C options"
-echo "  ${YELLOW}/disable-choices${NC}  - Turn off A/B/C options"
-echo "  ${YELLOW}/enable-tests${NC}     - Turn on mandatory testing"
-echo "  ${YELLOW}/disable-tests${NC}    - Turn off mandatory testing"
+echo "  ${YELLOW}/claudook/help${NC}           - Show all available commands"
+echo "  ${YELLOW}/claudook/status${NC}         - Check current status"
+echo "  ${YELLOW}/claudook/choices-enable${NC}  - Turn on A/B/C options"
+echo "  ${YELLOW}/claudook/choices-disable${NC} - Turn off A/B/C options"
+echo "  ${YELLOW}/claudook/tests-enable${NC}    - Turn on mandatory testing"
+echo "  ${YELLOW}/claudook/tests-disable${NC}   - Turn off mandatory testing"
 echo ""
 echo -e "${BLUE}📊 Features Enabled:${NC}"
 echo "  ✅ Multiple Choice System (A/B/C options)"
