@@ -114,37 +114,82 @@ async function createSettings(installDir) {
   }
 
   const settings = {
-    autoApprovedCommands: [
-      "node .claude/hooks/claudook/*.js *",
-      "node .claude/hooks/claudook/toggle_controls.js *",
-      "node .claude/hooks/claudook/analytics_tracker.js *",
-      "node .claude/hooks/claudook/security_guard.js *",
-      "node .claude/hooks/claudook/git_backup.js *"
-    ],
     hooks: {
-      before_tool_use: [
+      PreToolUse: [
         {
+          matcher: "*",
           hooks: [
             {
-              command: "node .claude/hooks/claudook/security_guard.js",
-              args: ["${tool_name}", "${params}"],
-              blocking: true
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/analytics_tracker.js"
             },
             {
-              command: "node .claude/hooks/claudook/analytics_tracker.js",
-              args: ["before", "${tool_name}", "${params}"],
-              blocking: false
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/smart_context.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/smart_controller.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/multiple_choice.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/test_enforcer.js"
             }
           ]
-        }
-      ],
-      after_tool_use: [
+        },
         {
+          matcher: "Bash",
           hooks: [
             {
-              command: "node .claude/hooks/claudook/analytics_tracker.js",
-              args: ["after", "${tool_name}", "${result}"],
-              blocking: false
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/security_guard.js"
+            }
+          ]
+        },
+        {
+          matcher: "Write|Edit|MultiEdit",
+          hooks: [
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/git_backup.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/doc_enforcer.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/perf_optimizer.js"
+            }
+          ]
+        },
+        {
+          matcher: "TodoWrite",
+          hooks: [
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/task_orchestrator.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/task_analyzer.js"
+            },
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/dependency_analyzer.js"
+            }
+          ]
+        },
+        {
+          matcher: "Task",
+          hooks: [
+            {
+              type: "command",
+              command: "node ${CLAUDE_PROJECT_DIR}/.claude/hooks/claudook/agent_spawner.js"
             }
           ]
         }
