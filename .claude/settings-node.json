@@ -1,0 +1,66 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js task_orchestrator.py"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js smart_controller.py session-start"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js smart_context.py"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js security_guard.py"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js git_backup.py"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js analytics_tracker.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js smart_controller.py post-tool"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js perf_optimizer.py"
+          },
+          {
+            "type": "command",
+            "command": "node .claude/hooks/claudook/runner.js doc_enforcer.py"
+          }
+        ]
+      }
+    ]
+  }
+}

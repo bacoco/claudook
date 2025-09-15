@@ -107,6 +107,11 @@ echo -e "${BLUE}🔧 Installing hooks locally...${NC}"
 if ls "$REPO_DIR"/.claude/hooks/claudook/*.py 1> /dev/null 2>&1; then
     cp "$REPO_DIR"/.claude/hooks/claudook/*.py "$INSTALL_DIR/.claude/hooks/claudook/"
     chmod +x "$INSTALL_DIR/.claude/hooks/claudook/"*.py
+    # Also copy Node.js runners if they exist
+    if [ -f "$REPO_DIR/.claude/hooks/claudook/runner.js" ]; then
+        cp "$REPO_DIR"/.claude/hooks/claudook/*.js "$INSTALL_DIR/.claude/hooks/claudook/" 2>/dev/null
+        chmod +x "$INSTALL_DIR/.claude/hooks/claudook/"*.js 2>/dev/null
+    fi
     echo -e "${GREEN}✅ Hook files installed${NC}"
 else
     echo -e "${RED}❌ Failed to copy hook files - no Python files found in $REPO_DIR/.claude/hooks/claudook/${NC}"
@@ -143,6 +148,15 @@ if [ -f "$INSTALL_DIR/.claude/settings.json" ]; then
     echo -e "${GREEN}✅ Backup created${NC}"
 fi
 
+# Detect if Node.js is available for better path handling
+if command -v node &> /dev/null; then
+    RUNNER_CMD="node .claude/hooks/claudook/runner.js"
+    echo -e "${GREEN}✅ Node.js detected - using robust Node.js runner${NC}"
+else
+    RUNNER_CMD="python3 .claude/hooks/claudook/hook_runner.py"
+    echo -e "${YELLOW}⚠️ Node.js not found - using Python runner${NC}"
+fi
+
 # Copy settings file (use minimal by default)
 if [ -f "$REPO_DIR/.claude/settings-hook.json" ]; then
     echo -e "${BLUE}📝 Creating local settings file...${NC}"
@@ -171,7 +185,7 @@ def rewrite_command(cmd: str) -> str:
     if m:
         script = m.group(1)
         rest = m.group(2).strip()
-        new_cmd = f"python3 .claude/hooks/claudook/hook_runner.py {script}"
+        new_cmd = f"$RUNNER_CMD {script}"
         if rest:
             new_cmd += f" {rest}"
         return new_cmd
@@ -222,7 +236,7 @@ if existing_settings:
 with open(settings_path, 'w') as f:
     json.dump(settings, f, indent=2)
 
-print('✅ Local settings configured (python3 + hook_runner)')
+print('✅ Local settings configured')
 EOF
 fi
 
